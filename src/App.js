@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ethers } from 'ethers';
 import './App.css';
 import WalletConnector from './components/WalletConnector';
 import NFTMinter from './components/NFTMinter';

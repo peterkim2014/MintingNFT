@@ -16,6 +16,7 @@ function WalletConnector({ setAccount, setProvider }) {
         if (window.ethereum.providers?.length) {
           // If multiple providers are detected
           window.ethereum.providers.forEach((p) => {
+            console.log("Providers list: ", p)
             if (p.isMetaMask) {
               provider = new ethers.providers.Web3Provider(p);
             }

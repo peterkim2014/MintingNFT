@@ -18,10 +18,10 @@ function NFTMinter({ account, provider }) {
 
     try {
       // Use the existing provider and signer
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
 
       // Example contract address and ABI (replace with your own contract details)
-      const contractAddress = '0xYourContractAddressHere'; // Replace with actual contract address
+      const contractAddress = '0x1234567890abcdef1234567890abcdef12345678'; // Replace with actual contract address from your smart contract deployment
       const contractABI = [
         "function mint() public returns (uint256)"
       ];
