@@ -1,23 +1,23 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { ethers } from 'ethers';
 import './App.css';
+import WalletConnector from './components/WalletConnector';
+import NFTMinter from './components/NFTMinter';
 
 function App() {
+  const [account, setAccount] = useState(null); // State to store the connected account
+  const [provider, setProvider] = useState(null); // State to store the provider
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Mint Your NFT (Testing Network Only)</h1>
+      <WalletConnector setAccount={setAccount} setProvider={setProvider} />
+      {account && provider && (
+        <>
+          <p>Your connected account: {account}</p>
+          <NFTMinter account={account} provider={provider} />
+        </>
+      )}
     </div>
   );
 }
