@@ -17,7 +17,7 @@ function NFTMinter({ account, provider, contract }) {
 
     try {
       // Send mint transaction (testing only, no actual value involved)
-      const tx = await contract.mint({ gasLimit: 1000000 });
+      const tx = await contract.mint({ gasLimit: 500000 });
       console.log('Transaction sent:', tx.hash);
       setTxHash(tx.hash);
 
