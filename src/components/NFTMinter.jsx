@@ -1,8 +1,7 @@
 // NFTMinter.js
 import React, { useState } from 'react';
-import { ethers } from 'ethers';
 
-function NFTMinter({ account, provider }) {
+function NFTMinter({ account, provider, contract }) {
   const [minting, setMinting] = useState(false);
   const [txHash, setTxHash] = useState(null);
 
@@ -17,20 +16,8 @@ function NFTMinter({ account, provider }) {
     setMinting(true);
 
     try {
-      // Use the existing provider and signer
-      const signer = await provider.getSigner();
-
-      // Example contract address and ABI (replace with your own contract details)
-      const contractAddress = '0x1234567890abcdef1234567890abcdef12345678'; // Replace with actual contract address from your smart contract deployment
-      const contractABI = [
-        "function mint() public returns (uint256)"
-      ];
-
-      // Create contract instance
-      const nftContract = new ethers.Contract(contractAddress, contractABI, signer);
-
       // Send mint transaction (testing only, no actual value involved)
-      const tx = await nftContract.mint();
+      const tx = await contract.mint({ gasLimit: 1000000 });
       console.log('Transaction sent:', tx.hash);
       setTxHash(tx.hash);
 
