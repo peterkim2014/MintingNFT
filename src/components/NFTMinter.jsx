@@ -23,11 +23,11 @@ function NFTMinter({ account, provider, contractAddress }) {
     const mintNFT = async () => {
         // Basic input validation
         if (!account) {
-            alert('Please connect your wallet first!');
+            // alert('Please connect your wallet first!');
             return;
         }
         if (!name || !description || !imageFile) {
-            alert("Please provide all the necessary information (Name, Description, Image File)");
+            // alert("Please provide all the necessary information (Name, Description, Image File)");
             return;
         }
 
@@ -37,7 +37,7 @@ function NFTMinter({ account, provider, contractAddress }) {
         // Upload image to IPFS using handleImageUpload
         const imageResponse = await handleImageUpload(imageFile);
         if (!imageResponse.success) {
-            alert('Failed to upload image to IPFS');
+            // alert('Failed to upload image to IPFS');
             setMinting(false);
             return;
         }
@@ -55,7 +55,7 @@ function NFTMinter({ account, provider, contractAddress }) {
         // Pin metadata to IPFS using Pinata
         const response = await pinJSONToIPFS(metadata);
         if (!response.success) {
-            alert('Failed to pin metadata to IPFS');
+            // alert('Failed to pin metadata to IPFS');
             setMinting(false);
             return;
         }
@@ -77,7 +77,7 @@ function NFTMinter({ account, provider, contractAddress }) {
 
             console.log('Transaction sent:', tx.hash);
             setTxHash(tx.hash);
-            alert(`NFT Minted Successfully! Transaction Hash: ${tx.hash}`);
+            // alert(`NFT Minted Successfully! Transaction Hash: ${tx.hash}`);
 
             // Wait for transaction confirmation
             await tx.wait();
@@ -85,7 +85,7 @@ function NFTMinter({ account, provider, contractAddress }) {
 
         } catch (error) {
             console.error('Error minting NFT:', error);
-            alert(`Error: ${error.message}`);
+            // alert(`Error: ${error.message}`);
         } finally {
             setMinting(false);
         }

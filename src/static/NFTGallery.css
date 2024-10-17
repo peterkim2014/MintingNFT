@@ -1,6 +1,9 @@
 .nft-gallery {
     padding: 20px;
-    color: black;
+    height: auto;
+}
+.myNFT-gallery {
+    color: white;
 }
 
 .nft-grid {
@@ -10,6 +13,7 @@
 }
 
 .nft-card {
+    color: black;
     border: 1px solid #ddd;
     padding: 20px;
     text-align: center;

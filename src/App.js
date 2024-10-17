@@ -5,6 +5,7 @@ import NFTMinter from './components/NFTMinter';
 import NFTGallery from './components/NFTGallery';
 // import Contract from './compiledData/contract.json';
 import Contract from './compiledData/contract2.json';
+import './App.css';
 
 function App() {
   const [account, setAccount] = useState(null); // State to store the connected account
@@ -51,7 +52,7 @@ function App() {
   }, [provider]);
 
   useEffect(() => {
-    if (provider && account) {
+    // if (account) {
       const loadBalance = async () => {
         try {
           const balanceBigNumber = await provider.getBalance(account);
@@ -62,25 +63,26 @@ function App() {
         }
       };
       loadBalance();
-    }
-  }, [provider, account]);
+    // }
+  }, []);
 
   return (
     <div className="App">
-      <h1>Mint Your NFT (Testing Network Only)</h1>
+      <div className="background-3d">
+        <div className="bg-circle"></div>
+        <div className="bg-circle"></div>
+        <div className="bg-circle"></div>
+      </div>
+      <h1 className="animated-title">Mint Your NFT (Test Network)</h1>
       <WalletConnector setAccount={setAccount} setProvider={setProvider} />
       {account && provider && (
-        <>
+        <div className="account-info">
           <p>Your connected account: {account}</p>
           {balance !== null && <p>Account Balance: {balance} ETH</p>}
           <p>Contract Address: {contractAddress ? contractAddress : "Not deployed yet"}</p>
-        </>
+        </div>
       )}
-      {account && provider && contract && (
-        
-          <NFTMinter account={account} provider={provider} contract={contract} />
-        
-      )}
+      {account && provider && contract && <NFTMinter account={account} provider={provider} contract={contract} />}
       <NFTGallery account={account} provider={provider} contractAddress={contractAddress} />
     </div>
   );

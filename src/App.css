@@ -1,34 +1,132 @@
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: radial-gradient(circle, #1e1e1e, #3a3a3a, #000000);
+  perspective: 1000px; /* Perspective to create depth */
+  color: #f9f9f9;
+  overflow-x: hidden; /* Prevent scrollbars from appearing */
+}
+
 .App {
-  text-align: center;
-
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  
+  animation: fadeIn 2s ease-in-out;
+  transform-style: preserve-3d;
 }
 
-.App-link {
+.animated-title {
+  font-size: 3em;
   color: #61dafb;
+  text-shadow: 0 0 10px rgba(97, 218, 251, 0.8);
+  animation: titleAnimation 3s infinite alternate;
+  margin-bottom: 20px;
+  transform: translateZ(50px);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@keyframes titleAnimation {
+  0% {
+    text-shadow: 0 0 10px rgba(97, 218, 251, 0.8);
+    transform: scale(1) translateZ(50px);
   }
-  to {
-    transform: rotate(360deg);
+  100% {
+    text-shadow: 0 0 20px rgba(97, 218, 251, 1);
+    transform: scale(1.02) translateZ(50px);
+  }
+}
+
+.account-info {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+  margin-bottom: 20px;
+  margin-top: 15px;
+  transform: translateZ(20px); /* Lift account-info forward in 3D space */
+}
+
+/* .account-info:hover { 
+  transform: translateY(-5px) translateZ(20px);
+} */
+
+button {
+  background-color: #61dafb;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 5px;
+  font-size: 1.1em;
+  color: black;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(97, 218, 251, 0.4);
+  transform: translateZ(10px); /* Lift button forward in 3D space */
+}
+
+button:hover {
+  background-color: #21a1f1;
+  box-shadow: 0 8px 30px rgba(33, 161, 241, 0.7);
+}
+
+button:active {
+  transform: scale(0.98) translateZ(10px);
+}
+
+/* 3D Rotating background elements */
+.background-3d {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  /* perspective: 1000px; */
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background: rgba(97, 218, 251, 0.15);
+  border-radius: 50%;
+  animation: rotate 10s linear infinite;
+}
+
+.bg-circle:nth-child(1) {
+  top: 20%;
+  left: 10%;
+}
+
+.bg-circle:nth-child(2) {
+  top: 50%;
+  left: 80%;
+}
+
+.bg-circle:nth-child(3) {
+  top: 70%;
+  left: 40%;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateX(0) rotateY(0);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateZ(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
   }
 }
