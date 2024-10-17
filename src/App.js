@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import WalletConnector from './components/WalletConnector';
 import NFTMinter from './components/NFTMinter';
+import NFTGallery from './components/NFTGallery';
 // import Contract from './compiledData/contract.json';
 import Contract from './compiledData/contract2.json';
 
@@ -9,7 +10,7 @@ function App() {
   const [account, setAccount] = useState(null); // State to store the connected account
   const [provider, setProvider] = useState(null); // State to store the provider
   const [contract, setContract] = useState(null); // State to store the contract instance
-  const [contractAddress, setContractAddress] = useState(null); // State to store the deployed contract address
+  const [contractAddress, setContractAddress] = useState(""); // State to store the deployed contract address
   const [balance, setBalance] = useState(null); // State to store the account balance
 
   useEffect(() => {
@@ -76,8 +77,11 @@ function App() {
         </>
       )}
       {account && provider && contract && (
-        <NFTMinter account={account} provider={provider} contract={contract} />
+        
+          <NFTMinter account={account} provider={provider} contract={contract} />
+        
       )}
+      <NFTGallery account={account} provider={provider} contractAddress={contractAddress} />
     </div>
   );
 }
