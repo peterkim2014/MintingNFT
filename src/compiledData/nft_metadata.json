@@ -1,0 +1,5 @@
+{
+    "name": "My Awesome NFT",
+    "description": "This is my first NFT!",
+    "image": "ipfs://<hash_of_your_image>"
+}

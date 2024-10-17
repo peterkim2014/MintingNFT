@@ -2,21 +2,29 @@
 pragma solidity ^0.8.27;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "hardhat/console.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract MyNFT is ERC721 {
-    uint256 public tokenCounter;
+contract MyNFT2 is ERC721URIStorage, Ownable {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
 
-    constructor() ERC721("MyNFT", "MNFT") {
-        tokenCounter = 0;
-    }
+    constructor() ERC721("MyNFT2", "MNFT") {}
 
-    function mint() public returns (uint256) {
-        console.log("Minting started for address:", msg.sender);
-        uint256 newItemId = tokenCounter;
-        _safeMint(msg.sender, newItemId);
-        console.log("Minted token ID:", newItemId);
-        tokenCounter++;
+    // Mint function that accepts a tokenURI
+    event NFTMinted(address indexed owner, uint256 tokenId, string tokenURI);
+
+    function mint(address to, string memory tokenURI) public returns (uint256) {
+        _tokenIds.increment();
+        uint256 newItemId = _tokenIds.current();
+
+        _safeMint(to, newItemId);
+        _setTokenURI(newItemId, tokenURI);
+
+        emit NFTMinted(to, newItemId, tokenURI); // Emit event here
+
         return newItemId;
     }
+
 }
