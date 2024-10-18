@@ -1,0 +1,100 @@
+.nft-minter-console {
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1e1e;
+  color: #00ff00;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.console-window {
+  background-color: #000000;
+  padding: 10px;
+  border-radius: 5px;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border: 2px solid #00ff00;
+}
+
+.console-output {
+  white-space: pre-wrap;
+}
+
+.console-log {
+  margin: 0;
+  padding: 0;
+  color: #00ff00;
+}
+
+.console-inputs {
+  display: flex;
+  flex-direction: column;
+}
+
+.console-input, .console-file-input {
+  background-color: #000000;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.console-button {
+  background-color: #000000;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 10px;
+  cursor: pointer;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.console-button:hover {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+a {
+  color: #00ff00;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.editor-wrapper {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.editor-controls {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+
+.editor-controls label {
+  color: #00ff00;
+}
+
+.editor-controls input {
+  margin: 0 5px;
+}
+
+.console-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #00ff00;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}

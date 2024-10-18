@@ -139,6 +139,7 @@ function NFTGallery({ account, provider, contractAddress }) {
     }, [collections]);
 
     const truncateText = (text, maxLength) => {
+        if (!text) return '';
         return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
     };
     // Function to handle copying to clipboard
@@ -193,10 +194,12 @@ function NFTGallery({ account, provider, contractAddress }) {
                                                     <strong>Creator:</strong> {truncateText(collection.nftDetails.detailedNftData.creator, 15)}
                                                     <span className="copy-indicator"> ({copyStatus[`creator-${index}`] || 'Click to copy'})</span>
                                                 </p>
+                                                ) : timeOutState[index] ? (
+                                                    <p>No data available</p>
                                                 ) : (
                                                     <p>Loading Data...</p>
                                                 )}
-                                                {collection.nftDetails.detailedNftData.owners.length > 0 && (
+                                                {collection.nftDetails?.detailedNftData?.owners?.length > 0 && (
                                                     <p onClick={() => copyToClipboard(collection.nftDetails.detailedNftData.owners.slice(-1)[0].address, `owner-${index}`)} className="copyable">
                                                     <strong>Last Owner:</strong> {truncateText(collection.nftDetails.detailedNftData.owners.slice(-1)[0].address, 15)}
                                                     <span className="copy-indicator"> ({copyStatus[`owner-${index}`] || 'Click to copy'})</span>

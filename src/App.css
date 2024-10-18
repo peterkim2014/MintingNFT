@@ -40,6 +40,10 @@ body {
   transition: transform 0.4s ease, color 0.4s ease;
   position: relative;
   border-radius: 50px;
+} .nav-item a {
+  text-decoration: none; /* Remove underline */
+  color: #fff; /* Change color to white or any preferred color */
+  transition: color 0.3s ease; /* Smooth transition for hover effects */
 }
 
 .nav-item:hover::before {

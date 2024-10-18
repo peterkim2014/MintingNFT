@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { ethers } from 'ethers';
 import WalletConnector from './components/WalletConnector';
 import NFTMinter from './components/NFTMinter';
@@ -157,55 +158,77 @@ function App() {
 
 
   return (
-    <div className="App">
-      <div className="background-3d">
-        <div className="bg-circle"></div>
-        <div className="bg-circle"></div>
-        <div className="bg-circle"></div>
-      </div>
-      
-      <div className='header'>
-        {/* <h1 className="animated-title">Sonoa</h1> */}
-        <h2 className="animated-title">Mint Your NFT (Test Network)</h2>
-        <div className='nav-bar'>
-            <ul className='nav-links'>
-                <li className='nav-item home active'>Home</li>
-                <li className='nav-item'>About</li>
-                <li className='nav-item'>Collections</li>
-                <li className='nav-item'>Contact</li>
+    <Router>
+      <div className="App">
+        <div className="background-3d">
+          <div className="bg-circle"></div>
+          <div className="bg-circle"></div>
+          <div className="bg-circle"></div>
+        </div>
+
+        <div className="header">
+          <h2 className="animated-title">Mint Your NFT (Test Network)</h2>
+          <div className="nav-bar">
+            <ul className="nav-links">
+              <li className="nav-item">
+                <Link to="/">Home</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/mint">Mint</Link>
+              </li>
+              <li className="nav-item">Account</li>
+              <li className="nav-item">My Collections</li>
             </ul>
+          </div>
         </div>
-      </div>
+        <WalletConnector setAccount={setAccount} setProvider={setProvider} />
 
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                
+                <NFTGallery account={account} provider={provider} contractAddress={contractAddress} />
+              </>
+            }
+          />
 
-      <WalletConnector setAccount={setAccount} setProvider={setProvider}/>
+          <Route
+            path="/mint"
+            element={
+              account && provider ? (
+                <NFTMinter account={account} provider={provider} contract={contract} />
+              ) : (
+                <p>Please connect your wallet to access the Mint page.</p>
+              )
+            }
+          />
+        </Routes>
 
-      {account && (
+        {account && (
           <div
-          className={`account-info ${isMinimized ? 'minimized' : ''}`}
-          style={{ top: `${topPosition}px`, left: `${leftPosition}px` }}
-          onMouseDown={handleMouseDown}
+            className={`account-info ${isMinimized ? 'minimized' : ''}`}
+            style={{ top: `${topPosition}px`, left: `${leftPosition}px` }}
+            onMouseDown={handleMouseDown}
           >
-          {!isMinimized && (
-            <>
-              <p>Your connected account: {account}</p>
-              <p>Account Balance: {balance} ETH</p>
-              <p>Contract Address: {contractAddress ? contractAddress : "Not deployed yet"}</p>
-              <button onClick={handleLoadContract} className="load-contract-btn">
-                Load Contract
-              </button>
-            </>
-          )}
-          <button className="minimize-btn" onClick={toggleMinimize}>
-            {isMinimized ? 'Expand' : 'Minimize'}
-          </button>
-        </div>
-      )}
-
-      
-      {account && provider && contract && <NFTMinter account={account} provider={provider} contract={contract} />}
-      <NFTGallery account={account} provider={provider} contractAddress={contractAddress} />
-    </div>
+            {!isMinimized && (
+              <>
+                <p>Your connected account: {account}</p>
+                <p>Account Balance: {balance} ETH</p>
+                <p>Contract Address: {contractAddress ? contractAddress : "Not deployed yet"}</p>
+                <button onClick={handleLoadContract} className="load-contract-btn">
+                  Load Contract
+                </button>
+              </>
+            )}
+            <button className="minimize-btn" onClick={toggleMinimize}>
+              {isMinimized ? 'Expand' : 'Minimize'}
+            </button>
+          </div>
+        )}
+      </div>
+    </Router>
   );
 }
 
