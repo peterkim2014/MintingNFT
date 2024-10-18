@@ -172,7 +172,7 @@ button {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(97, 218, 251, 0.4);
-  transform: translateZ(10px); /* Lift button forward in 3D space */
+  transform: translateZ(10px); 
 }
 
 button:hover {
