@@ -7,6 +7,7 @@ function NFTGallery({ account, provider, contractAddress }) {
     const [loadingCollections, setLoadingCollections] = useState(true);
     const [currentNFT, setCurrentNFT] = useState(0);
     const [timeOutState, setTimeOutState] = useState({}); // State to track timeouts
+    const [copyStatus, setCopyStatus] = useState({});
 
     // Function to fetch collection details
     const fetchOpenSeaCollections = async () => {
@@ -19,7 +20,7 @@ function NFTGallery({ account, provider, contractAddress }) {
                     'x-api-key': 'b796154723e34b28b881eb99f040a70e',
                 },
                 params: {
-                    limit: 75, // Limit the collections fetched
+                    limit: 50, // Limit the collections fetched
                 }
             });
             console.log('Collections response:', response.data);
@@ -137,67 +138,91 @@ function NFTGallery({ account, provider, contractAddress }) {
         });
     }, [collections]);
 
-    return (
-        <div className="nft-gallery">
-    <div className="nft-info">
-        <img src={collections[currentNFT]?.image_url} alt={collections[currentNFT]?.name || 'NFT'} />
-        <h3>{collections[currentNFT]?.name || 'NFT'}</h3>
-    </div>
+    const truncateText = (text, maxLength) => {
+        return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+    };
+    // Function to handle copying to clipboard
+    const copyToClipboard = (text, key) => {
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                setCopyStatus(prev => ({ ...prev, [key]: 'Copied' }));
 
-    <div className="myNFT-collection">
-        <h2>Explore NFT Collections</h2>
-        {loadingCollections ? (
-            <p>Loading OpenSea collections...</p>
-        ) : (
-            <div className="nft-grid">
-                {collections.length > 0 ? (
-                    collections.map((collection, index) => (
-                        <div className="nft-card" key={index}>
-                            <div className="nft-card-inner">
-                                <div className="nft-card-front">
-                                    {collection.image_url ? (
-                                        <img src={collection.image_url} alt={collection.name} />
-                                    ) : (
-                                        <p>No image available</p>
-                                    )}
-                                    <h3>{collection.name}</h3>
-                                </div>
-                                <div className="nft-card-back">
-                                    <h4>{collection.name}</h4>
-                                    <p>NFT Details</p>
-                                    {collection.nftDetails ? (
-                                        <div>
-                                            <p>Token Standard: {collection.nftDetails.token_standard.toUpperCase()}</p>
-                                            {collection.nftDetails.detailedNftData.creator ? (
-                                                <p>Creator: {collection.nftDetails.detailedNftData.creator}</p>
-                                            ) : (
-                                                <p>Loading Data...</p>
-                                            )}
-                                            <ul>
-                                                {collection.nftDetails.detailedNftData.owners.map((owner, idx) => (
-                                                    <li key={idx}>Owner Address: {owner.address} (Qty: {owner.quantity})</li>
-                                                ))}
-                                            </ul>
-                                            <a href={collection.opensea_url} target="_blank" rel="noopener noreferrer">
-                                                View on OpenSea
-                                            </a>
-                                        </div>
-                                    ) : timeOutState[index] ? (
-                                        <p>No data available</p>
-                                    ) : (
-                                        <p>Loading Data...</p>
-                                    )}
+                // Revert back to "Click to copy" after 7 seconds
+                setTimeout(() => {
+                    setCopyStatus(prev => ({ ...prev, [key]: 'Click to copy' }));
+                }, 7000);
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+    };
+
+    return (
+    <div className="nft-gallery">
+        <div className="nft-info">
+            <img src={collections[currentNFT]?.image_url} alt={collections[currentNFT]?.name || 'NFT'} />
+            <h3>{collections[currentNFT]?.name || 'NFT'}</h3>
+        </div>
+
+        <div className="myNFT-collection">
+            <h2>Explore NFT Collections</h2>
+            {loadingCollections ? (
+                <p>Loading OpenSea collections...</p>
+            ) : (
+                <div className="nft-grid">
+                    {collections.length > 0 ? (
+                        collections.map((collection, index) => (
+                            <div className="nft-card" key={index}>
+                                <div className="nft-card-inner">
+                                    <div className="nft-card-front">
+                                        {collection.image_url ? (
+                                            <img src={collection.image_url} alt={collection.name} />
+                                        ) : (
+                                            <p>No image available</p>
+                                        )}
+                                        <h3>{collection.name}</h3>
+                                    </div>
+                                    <div className="nft-card-back">
+                                        <h4>{collection.name}</h4>
+                                        <p>NFT Details</p>
+                                        {collection.nftDetails ? (
+                                            <div className="nft-details">
+                                                <p><strong>Token Standard:</strong> {collection.nftDetails.token_standard.toUpperCase()}</p>
+                                                {collection.nftDetails.detailedNftData.creator ? (
+                                                    <p onClick={() => copyToClipboard(collection.nftDetails.detailedNftData.creator, `creator-${index}`)} className="copyable">
+                                                    <strong>Creator:</strong> {truncateText(collection.nftDetails.detailedNftData.creator, 15)}
+                                                    <span className="copy-indicator"> ({copyStatus[`creator-${index}`] || 'Click to copy'})</span>
+                                                </p>
+                                                ) : (
+                                                    <p>Loading Data...</p>
+                                                )}
+                                                {collection.nftDetails.detailedNftData.owners.length > 0 && (
+                                                    <p onClick={() => copyToClipboard(collection.nftDetails.detailedNftData.owners.slice(-1)[0].address, `owner-${index}`)} className="copyable">
+                                                    <strong>Last Owner:</strong> {truncateText(collection.nftDetails.detailedNftData.owners.slice(-1)[0].address, 15)}
+                                                    <span className="copy-indicator"> ({copyStatus[`owner-${index}`] || 'Click to copy'})</span>
+                                                </p>
+                                                )}
+                                                <a href={collection.opensea_url} target="_blank" rel="noopener noreferrer">
+                                                    View on OpenSea
+                                                </a>
+                                            </div>
+                                        ) : timeOutState[index] ? (
+                                            <p>No data available</p>
+                                        ) : (
+                                            <p>Loading Data...</p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))
-                ) : (
-                    <p>No collections found on OpenSea.</p>
-                )}
-            </div>
-        )}
+                        ))
+                    ) : (
+                        <p>No collections found on OpenSea.</p>
+                    )}
+                </div>
+            )}
+        </div>
     </div>
-</div>
+
 
     );
 }

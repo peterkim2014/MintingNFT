@@ -72,10 +72,11 @@ body {
   align-items: center;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.95);
+  box-sizing: border-box;
 }
 
 .nft-card-front {
-  background-color: #ffffff;
+  background-color: #ffffff5c;
   color: black;
   z-index: 2;
   transform: rotateY(0deg);
@@ -85,6 +86,12 @@ body {
   background-color: #1e1e1e;
   color: white;
   transform: rotateY(180deg);
+  text-align: left;
+  width: 100%;
+  overflow: hidden; /* Prevent overflow */
+  white-space: normal; /* Allow text to wrap */
+  max-height: 100%;
+  padding: 20px;
 }
 
 .nft-card img {
@@ -220,3 +227,32 @@ body {
     box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
   }
   
+  .nft-details p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    overflow-wrap: break-word; /* Break words if necessary */
+    word-wrap: break-word; /* Ensure long text wraps within the container */
+}
+
+.nft-details a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.nft-details a:hover {
+    text-decoration: underline;
+}
+.copyable {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+}
+
+.copy-indicator {
+  font-size: 0.8em;
+  color: #555;
+  margin-left: 5px;
+}
