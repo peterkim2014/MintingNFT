@@ -13,9 +13,12 @@ function App() {
   const [contract, setContract] = useState(null); // State to store the contract instance
   const [contractAddress, setContractAddress] = useState(""); // State to store the deployed contract address
   const [balance, setBalance] = useState(null); // State to store the account balance
+  const [topPosition, setTopPosition] = useState(85); // State to store the scroll distance for account details
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [isContractLoaded, setIsContractLoaded] = useState(false);
 
   useEffect(() => {
-    if (provider) {
+    if (provider && isContractLoaded === true) {
       const loadContract = async () => {
         try {
           const signer = provider.getSigner();
@@ -48,23 +51,60 @@ function App() {
         }
       };
       loadContract();
+      handleCloseContract();
     }
-  }, [provider]);
+  }, [isContractLoaded]);
 
   useEffect(() => {
-    // if (account) {
-      const loadBalance = async () => {
-        try {
-          const balanceBigNumber = await provider.getBalance(account);
-          const balanceInEth = ethers.utils.formatEther(balanceBigNumber);
-          setBalance(balanceInEth);
-        } catch (error) {
-          console.error("Error fetching balance:", error);
-        }
-      };
-      loadBalance();
-    // }
+    const loadBalance = async () => {
+      try {
+        const balanceBigNumber = await provider.getBalance(account);
+        const balanceInEth = ethers.utils.formatEther(balanceBigNumber);
+        setBalance(balanceInEth);
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+      }
+    };
+  
+    // Fetch the balance on the initial load
+    loadBalance();
+  
+    // Set up an interval to fetch the balance every 10 seconds (10000 ms)
+    const intervalId = setInterval(loadBalance, 10000); 
+  
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, [account, provider]); 
+
+  // Add scroll effect for account-info
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY; // Get vertical scroll position
+      setTopPosition(85 + scrollY); // Adjust top position dynamically
+    };
+
+    window.addEventListener('scroll', handleScroll); // Attach scroll event listener
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll); // Clean up event listener on unmount
+    };
   }, []);
+
+  // Toggle minimize and maximize the account-info
+  const toggleMinimize = () => {
+    setIsMinimized(!isMinimized);
+  };
+  // Function to handle manual contract load
+  const handleLoadContract = () => {
+    setIsContractLoaded(true); // Reset the contract loaded state to trigger loading
+  };
+  // Function to handle manual contract close
+  const handleCloseContract = () => {
+    setIsContractLoaded(false); // Reset the contract loaded state to trigger loading
+  };
+
+
+
 
   return (
     <div className="App">
@@ -74,13 +114,36 @@ function App() {
         <div className="bg-circle"></div>
       </div>
       
-      <h1 className="animated-title">Mint Your NFT (Test Network)</h1>
-      <WalletConnector setAccount={setAccount} setProvider={setProvider} />
-      {account && provider && (
-        <div className="account-info">
-          <p>Your connected account: {account}</p>
-          {balance !== null && <p>Account Balance: {balance} ETH</p>}
-          <p>Contract Address: {contractAddress ? contractAddress : "Not deployed yet"}</p>
+      <div className='header'>
+        <h1 className="animated-title">Mint Your NFT (Test Network)</h1>
+        <div className='nav-bar'>
+            <ul className='nav-links'>
+                <li className='nav-item home active'>Home</li>
+                <li className='nav-item'>About</li>
+                <li className='nav-item'>Collections</li>
+                <li className='nav-item'>Contact</li>
+            </ul>
+        </div>
+      </div>
+
+
+      <WalletConnector setAccount={setAccount} setProvider={setProvider}/>
+
+      {account && (
+          <div className={`account-info ${isMinimized ? 'minimized' : ''}`} style={{ top: `${topPosition}px` }}>
+          {!isMinimized && (
+            <>
+              <p>Your connected account: {account}</p>
+              <p>Account Balance: {balance} ETH</p>
+              <p>Contract Address: {contractAddress ? contractAddress : "Not deployed yet"}</p>
+              <button onClick={handleLoadContract} className="load-contract-btn">
+                Load Contract
+              </button>
+            </>
+          )}
+          <button className="minimize-btn" onClick={toggleMinimize}>
+            {isMinimized ? 'Expand' : 'Minimize'}
+          </button>
         </div>
       )}
 

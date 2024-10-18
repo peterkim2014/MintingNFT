@@ -8,6 +8,81 @@ body {
   height: auto;
 }
 
+
+.header {
+  text-align: center;
+  padding: 20px;
+}
+
+.nav-bar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: rgba(255, 255, 255, 0.1); /* Translucent background */
+  border-radius: 50px; /* Rounded shape */
+  padding: 1px 15px; /* Padding around the links */
+}
+
+.nav-item {
+  padding: 10px 20px;
+  margin: 0 10px;
+  color: #fff;
+  font-size: 1.08em;
+  cursor: pointer;
+  transition: transform 0.4s ease, color 0.4s ease;
+  position: relative;
+  border-radius: 50px;
+}
+
+.nav-item:hover::before {
+  opacity: 1;
+}
+
+.nav-item.active {
+  font-size: 1.15em;
+  color: #61dafb;
+  transform: scale(1.05) rotateY(10deg); /* Enlarged effect when active */
+  transition: all 0.6s ease;
+  border-radius: 20px 20px;
+}
+
+.nav-item.active::before {
+  opacity: 1;
+}
+
+@keyframes turnBar {
+  0% {
+      transform: scale(1) rotateY(0deg);
+  }
+  50% {
+      transform: scale(1.1) rotateY(10deg);
+  }
+  100% {
+      transform: scale(1) rotateY(0deg);
+  }
+}
+
+/* Adding shadow and rounded effect on hover */
+.nav-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.nav-item.active {
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.5);
+} 
+
+
+
+
+
 .App {
   display: flex;
   flex-direction: column;
@@ -46,12 +121,46 @@ body {
   transition: transform 0.3s ease;
   margin-bottom: 20px;
   margin-top: 15px;
-  transform: translateZ(20px); /* Lift account-info forward in 3D space */
+  transform: translateZ(20px); 
+  position: fixed;
+  top: 85px;
+  left: 10px;
+  height: 500px;
+  width: 275px;
+  Z-index: -1000;
+  overflow-wrap: break-word;
+} .minimize-btn {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background-color: #61dafb;
+  border: none;
+  padding: 10px;
+  color: black;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-/* .account-info:hover { 
-  transform: translateY(-5px) translateZ(20px);
-} */
+.minimize-btn:hover {
+  background-color: #21a1f1;
+}
+
+/* Minimized state */
+.account-info.minimized {
+  height: 50px;
+  width: 50px;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.account-info.minimized .minimize-btn {
+  position: relative;
+  bottom: 0;
+  right: 0;
+}
+
 
 button {
   background-color: #61dafb;
