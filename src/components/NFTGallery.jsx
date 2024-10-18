@@ -9,6 +9,7 @@ function NFTGallery({ account, provider, contractAddress }) {
     const [collections, setCollections] = useState([]);  // OpenSea collections
     const [loading, setLoading] = useState(true);
     const [loadingCollections, setLoadingCollections] = useState(true);
+    const [currentNFT, setCurrentNFT] = useState(0);
 
    // Function to fetch metadata from IPFS using Pinata's gateway with authentication headers
     const getMetadataFromIPFS = async (ipfsHash) => {
@@ -96,7 +97,7 @@ function NFTGallery({ account, provider, contractAddress }) {
 
             // Filter collections: only those with image_url and no "follower" in the name
             const filteredCollections = fetchedCollections.filter(
-                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && !collection.name.includes("0x")
+                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && !collection.name.includes("0x") && !collection.name.includes("REWARD")
             );
 
             // Avoid duplicates: Create a Set to track unique names
@@ -110,7 +111,7 @@ function NFTGallery({ account, provider, contractAddress }) {
             });
 
             // Select the first 10 collections after filtering
-            const finalCollections = uniqueCollections.slice(0, 10);
+            const finalCollections = uniqueCollections.slice(0, 9);
 
             // Update the state with the valid collections
             setCollections(finalCollections);
@@ -127,10 +128,23 @@ function NFTGallery({ account, provider, contractAddress }) {
         fetchOpenSeaCollections();  // Fetch collections once when the page loads
     }, []);  // Only run this effect once on mount
 
-
+    useEffect(() => {
+        const interval = setInterval(() => {
+          setCurrentNFT((prev) => (prev + 1) % collections.length);
+        }, 5000); // Automatically shift every 3 seconds
+    
+        return () => clearInterval(interval);
+    }, [collections.length]);
 
     return (
         <div className="nft-gallery">
+            <div className="nft-info">
+                <img src={collections[currentNFT]?.image_url} alt={collections[currentNFT]?.name} />
+                <h3>{collections[currentNFT]?.name}</h3>
+            </div>
+
+
+
             <div className="myNFT-gallery">
                 <h2>Your Minted NFTs</h2>
                 {loading ? (
@@ -154,30 +168,33 @@ function NFTGallery({ account, provider, contractAddress }) {
 
             </div>
 
-            <h2>OpenSea Collections</h2>
-            {loadingCollections ? (
-                <p>Loading OpenSea collections...</p>
-            ) : (
-                <div className="nft-grid">
-                    {collections.length > 0 ? (
-                        collections.map((collection, index) => (
-                            <div className="nft-card" key={index}>
-                                {collection.image_url ? (
-                                    <img src={collection.image_url} alt={collection.name} />
-                                ) : (
-                                    <p>No image available</p>
-                                )}
-                                <h3>{collection.name}</h3>
-                                <a href={collection.opensea_url} target="_blank" rel="noopener noreferrer">
-                                    View on OpenSea
-                                </a>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No collections found on OpenSea.</p>
-                    )}
-                </div>
-            )}
+
+            <div className="myNFT-collection">
+                <h2>Explore NFT Collections</h2>
+                {loadingCollections ? (
+                    <p>Loading OpenSea collections...</p>
+                ) : (
+                    <div className="nft-grid">
+                        {collections.length > 0 ? (
+                            collections.map((collection, index) => (
+                                <div className="nft-card" key={index}>
+                                    {collection.image_url ? (
+                                        <img src={collection.image_url} alt={collection.name} />
+                                    ) : (
+                                        <p>No image available</p>
+                                    )}
+                                    <h3>{collection.name}</h3>
+                                    <a href={collection.opensea_url} target="_blank" rel="noopener noreferrer">
+                                        View on OpenSea
+                                    </a>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No collections found on OpenSea.</p>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

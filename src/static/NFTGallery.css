@@ -1,77 +1,154 @@
 .nft-gallery {
     padding: 20px;
     height: auto;
-}
-.myNFT-gallery {
-    color: white;
-}
+    width: 90%;
+    max-width: 1200px;
+    perspective: 1000px; /* Add perspective for 3D effect */
+    position: relative;
+    text-align: center;
+  }
 
-.nft-grid {
+  .myNFT-gallery {
+    margin-top: 8rem;
+} .myNFT-collection {
+      margin-top: 6rem;
+  }
+  
+  .nft-ground {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+    margin-top: 100px;
+  }
+
+  .nft-grid {
+    margin-top: 8rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
-    gap: 20px; /* Space between cards */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Automatically fit 3-4 cards per row */
+    gap: 40px; /* Space between the cards */
+    justify-items: center; /* Center the cards within the grid */
+    width: 100%;
+    max-width: 1200px; /* Keep the grid within the max width */
+    margin: 0 auto; /* Center the grid */
 }
-
-.nft-card {
+  
+  .nft-card {
     color: black;
+    width: 250px;
+    height: 350px;
     border: 1px solid #ddd;
     padding: 20px;
     text-align: center;
-    background-color: #fff;
-    border-radius: 10px; /* Optional rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    overflow: visible; /* Allow content to overflow if needed */
-    display: flex;
-    flex-direction: column; /* Stack content vertically */
-    align-items: flex-start; /* Align content to the left */
-    justify-content: flex-start; /* Make content stick to the top */
-    height: auto; /* Let the card grow with content */
-    min-height: 350px; /* Set a minimum height for uniform appearance */
-}
-
-.nft-card img {
+    background-color: #ffffff77;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.85);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    position: relative;
+    transform: translateY(0) rotateX(15deg); /* Resting on ground */
+  }
+  
+  .nft-card img {
     max-width: 100%;
     height: auto;
-    max-height: 200px; /* Restrict image height to avoid overly large images */
-    object-fit: cover; /* Ensures image fits nicely */
-    border-radius: 8px; /* Rounded image corners */
-}
-
-.nft-card h3 {
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .nft-card h3 {
     margin-top: 10px;
     font-size: 1.2em;
     font-weight: bold;
     text-align: center;
-    word-wrap: break-word; /* Ensure long names wrap within the card */
-    max-width: 100%; /* Ensure text wraps inside the card */
-    white-space: normal; /* Allow text to break into multiple lines */
-    overflow: visible; /* Ensure the name is not clipped */
-}
-
-.nft-card p {
-    margin: 5px 0;
-    font-size: 0.9em;
-    color: #555;
-    text-align: left;
-    word-wrap: break-word; /* Prevent text overflow */
-    overflow: hidden;
-}
-
-.nft-card a {
+  }
+  
+  .nft-card a {
     text-decoration: none;
     color: #007bff;
     font-weight: bold;
-    margin-top: auto; /* Push the link to the bottom */
-    white-space: normal; /* Allow the link text to wrap */
-}
-
-.nft-card a:hover {
+    margin-top: auto;
+  }
+  
+  .nft-card a:hover {
     text-decoration: underline;
-}
-
-/* Responsive for smaller screens */
-@media (max-width: 768px) {
-    .nft-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  /* Floating NFT in the center */
+  .nft-card.floating {
+    transform: translateY(-50px) rotateX(0deg); /* Lifted and upright */
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+  }
+  
+  .nft-card.floating::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    width: 60%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.2); /* Shadow below the floating NFT */
+    transform: translateX(-50%);
+    border-radius: 50%;
+  }
+  
+  /* Shifting Animation */
+  @keyframes shiftLeft {
+    0% {
+      transform: translateX(0);
     }
-}
+    100% {
+      transform: translateX(-300px);
+    }
+  }
+  
+  .nft-shift {
+    animation: shiftLeft 1s ease-in-out forwards;
+  }
+  
+  /* Floating animation for the next NFT */
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0) rotateX(15deg);
+    }
+    100% {
+      transform: translateY(-50px) rotateX(0deg);
+    }
+  }
+  
+  .nft-float-up {
+    animation: floatUp 1s ease-in-out forwards;
+  }
+  
+ 
+/* Display NFT info dynamically */
+.nft-info {
+    text-align: center;
+    margin-top: 7rem;
+    color: white;
+    font-size: 1.2em;
+    height: 20rem;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; /* Smooth transition for the info box */
+    transform: translateY(20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  } .nft-info > h2 {
+    width: 70%;
+  }
+  
+  .nft-info.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .nft-info img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: cover; /* Maintain aspect ratio */
+    margin-bottom: 1rem;
+    transition: all 0.3s ease-in-out;
+  }
+  

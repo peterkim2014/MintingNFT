@@ -73,6 +73,7 @@ function App() {
         <div className="bg-circle"></div>
         <div className="bg-circle"></div>
       </div>
+      
       <h1 className="animated-title">Mint Your NFT (Test Network)</h1>
       <WalletConnector setAccount={setAccount} setProvider={setProvider} />
       {account && provider && (
@@ -82,6 +83,8 @@ function App() {
           <p>Contract Address: {contractAddress ? contractAddress : "Not deployed yet"}</p>
         </div>
       )}
+
+      
       {account && provider && contract && <NFTMinter account={account} provider={provider} contract={contract} />}
       <NFTGallery account={account} provider={provider} contractAddress={contractAddress} />
     </div>

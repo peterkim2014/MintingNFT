@@ -5,6 +5,7 @@ body {
   perspective: 1000px; /* Perspective to create depth */
   color: #f9f9f9;
   overflow-x: hidden; /* Prevent scrollbars from appearing */
+  height: auto;
 }
 
 .App {
@@ -12,7 +13,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
+  height: auto;
   animation: fadeIn 2s ease-in-out;
   transform-style: preserve-3d;
 }
@@ -80,15 +81,15 @@ button:active {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  /* perspective: 1000px; */
-  pointer-events: none;
+  height: 100vh; /* Ensures it covers the full viewport height */
+  z-index: -10;
+  /* pointer-events: none; */
   overflow: hidden;
 }
 
+
 .bg-circle {
-  position: relative;
+  position: absolute;
   width: 200px;
   height: 200px;
   background: rgba(97, 218, 251, 0.15);
@@ -130,3 +131,5 @@ button:active {
     transform: scale(1) translateZ(0);
   }
 }
+
+
