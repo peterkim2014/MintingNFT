@@ -6,6 +6,7 @@ function NFTGallery({ account, provider, contractAddress }) {
     const [collections, setCollections] = useState([]);  // OpenSea collections
     const [loadingCollections, setLoadingCollections] = useState(true);
     const [currentNFT, setCurrentNFT] = useState(0);
+    const [timeOutState, setTimeOutState] = useState({}); // State to track timeouts
 
     // Function to fetch collection details
     const fetchOpenSeaCollections = async () => {
@@ -18,13 +19,13 @@ function NFTGallery({ account, provider, contractAddress }) {
                     'x-api-key': 'b796154723e34b28b881eb99f040a70e',
                 },
                 params: {
-                    limit: 9, // Limit the collections fetched
+                    limit: 99, // Limit the collections fetched
                 }
             });
             console.log('Collections response:', response.data);
 
             const fetchedCollections = response.data.collections.filter(
-                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && collection.owner.includes("0x")
+                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && collection.owner.includes("0x") && !collection.name.includes("0x")
             );
             console.log('Filtered collections:', fetchedCollections);
 
@@ -55,6 +56,7 @@ function NFTGallery({ account, provider, contractAddress }) {
                             'x-api-key': 'b796154723e34b28b881eb99f040a70e',
                         },
                     });
+                    
 
                     console.log(`NFT response for collection ${collection.name}:`, nftResponse.data);
 
@@ -91,6 +93,22 @@ function NFTGallery({ account, provider, contractAddress }) {
         return () => clearInterval(interval);
     }, [collections.length]);
 
+    // Timeout handler to set "No data available" after 5 seconds
+    useEffect(() => {
+        collections.forEach((collection, index) => {
+            if (!collection.nftDetails) {
+                const timeoutId = setTimeout(() => {
+                    setTimeOutState((prev) => ({
+                        ...prev,
+                        [index]: true, // Mark as timed out
+                    }));
+                }, 5000); // Timeout for 5 seconds
+
+                return () => clearTimeout(timeoutId); // Cleanup on unmount
+            }
+        });
+    }, [collections]);
+
     return (
         <div className="nft-gallery">
             <div className="nft-info">
@@ -117,16 +135,14 @@ function NFTGallery({ account, provider, contractAddress }) {
                                         View on OpenSea
                                     </a>
                                     <div>
-                                        <p>More NFT Details:</p>
-                                        {!collection.nftDetails ? (
-                                            <p>Loading Data...</p>
+                                    {collection.nftDetails ? (
+                                            <div>
+                                                <p key={index}>Token Standard: {collection.nftDetails.token_standard.toUpperCase()}</p>
+                                            </div>
+                                        ) : timeOutState[index] ? ( // Check timeout state
+                                            <p>No data available</p>
                                         ) : (
-                                        <div>
-                                            
-                                            <p key={index}>Token Standard: {collection.nftDetails.token_standard.toUpperCase()}</p>
-                                            
-                                        </div>
-
+                                            <p>Loading Data...</p>
                                         )}
                                     </div>
                                 </div>
