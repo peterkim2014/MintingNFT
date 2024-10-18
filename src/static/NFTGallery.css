@@ -1,18 +1,25 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: radial-gradient(circle, #1e1e1e, #3a3a3a, #000000);
+    perspective: 1000px; /* Perspective to create depth */
+    color: #f9f9f9;
+    overflow-x: hidden; /* Prevent scrollbars from appearing */
+    height: auto;
+  }
+
 .nft-gallery {
     padding: 20px;
     height: auto;
     width: 90%;
     max-width: 1200px;
-    perspective: 1000px; /* Add perspective for 3D effect */
-    position: relative;
+    perspective: 1000px; 
+    /* position: relative; */
     text-align: center;
   }
-
-  .myNFT-gallery {
-    margin-top: 8rem;
-} .myNFT-collection {
-      margin-top: 6rem;
-  }
+/* .myNFT-gallery {
+    margin-top: 20px;
+} */
   
   .nft-ground {
     display: flex;
@@ -25,12 +32,13 @@
   .nft-grid {
     margin-top: 8rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Automatically fit 3-4 cards per row */
-    gap: 40px; /* Space between the cards */
-    justify-items: center; /* Center the cards within the grid */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+    gap: 40px; 
+    justify-items: center; 
+    justify-content: center;
     width: 100%;
-    max-width: 1200px; /* Keep the grid within the max width */
-    margin: 0 auto; /* Center the grid */
+    max-width: 1200px; 
+    margin: 0 auto; 
 }
   
   .nft-card {
@@ -46,7 +54,7 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     transform-style: preserve-3d;
     position: relative;
-    transform: translateY(0) rotateX(15deg); /* Resting on ground */
+    transform: translateY(0) rotateX(15deg);
   }
   
   .nft-card img {
@@ -125,17 +133,14 @@
 /* Display NFT info dynamically */
 .nft-info {
     text-align: center;
-    margin-top: 7rem;
     color: white;
     font-size: 1.2em;
-    height: 20rem;
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; /* Smooth transition for the info box */
-    transform: translateY(20px);
+    height: 65vh; 
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 100%;
-  } .nft-info > h2 {
+    justify-content: center; 
+    align-items: center; 
+} .nft-info > h2 {
     width: 70%;
   }
   
@@ -143,12 +148,14 @@
     opacity: 1;
     transform: translateY(0);
   }
-  
+
+
   .nft-info img {
     max-width: 100%;
-    max-height: 200px;
-    object-fit: cover; /* Maintain aspect ratio */
+    max-height: 250px;
+    object-fit: cover; 
     margin-bottom: 1rem;
     transition: all 0.3s ease-in-out;
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
   }
   

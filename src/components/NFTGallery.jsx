@@ -87,7 +87,7 @@ function NFTGallery({ account, provider, contractAddress }) {
                     'x-api-key': 'b796154723e34b28b881eb99f040a70e', // Use your OpenSea API key here
                 },
                 params: {
-                    limit: 90,  // Fetch 90 collections
+                    limit: 99,  // Fetch 90 collections
                     include_hidden: false,
                     order_by: 'created_date'
                 }
@@ -97,7 +97,7 @@ function NFTGallery({ account, provider, contractAddress }) {
 
             // Filter collections: only those with image_url and no "follower" in the name
             const filteredCollections = fetchedCollections.filter(
-                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && !collection.name.includes("0x") && !collection.name.includes("REWARD")
+                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && !collection.name.includes("0x") && !collection.name.includes("REWARD") && !collection.name.toLowerCase().includes("won") && !collection.name.includes("won") && !collection.name.toLowerCase().includes("profile")
             );
 
             // Avoid duplicates: Create a Set to track unique names
@@ -144,9 +144,9 @@ function NFTGallery({ account, provider, contractAddress }) {
             </div>
 
 
+            {/* <div className="myNFT-gallery"> */}
 
-            <div className="myNFT-gallery">
-                <h2>Your Minted NFTs</h2>
+                {/* <h2>Your Minted NFTs</h2>
                 {loading ? (
                     <p>Loading your NFTs...</p>
                 ) : (
@@ -164,9 +164,9 @@ function NFTGallery({ account, provider, contractAddress }) {
                             <p>No NFTs found in your wallet.</p>
                         )}
                     </div>
-                )}
+                )} */}
 
-            </div>
+            {/* </div> */}
 
 
             <div className="myNFT-collection">
