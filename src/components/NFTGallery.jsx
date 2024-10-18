@@ -1,121 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
 import axios from 'axios';
-import ContractAbi from '../compiledData/contract-abi.json';
 import '../static/NFTGallery.css'; // Ensure you have this CSS for styling
 
 function NFTGallery({ account, provider, contractAddress }) {
-    const [nfts, setNFTs] = useState([]);  // User-owned NFTs
     const [collections, setCollections] = useState([]);  // OpenSea collections
-    const [loading, setLoading] = useState(true);
     const [loadingCollections, setLoadingCollections] = useState(true);
     const [currentNFT, setCurrentNFT] = useState(0);
 
-   // Function to fetch metadata from IPFS using Pinata's gateway with authentication headers
-    const getMetadataFromIPFS = async (ipfsHash) => {
-        const url = `https://gateway.pinata.cloud/ipfs/${ipfsHash}`;
-
-        try {
-            const response = await axios.get(url, {
-                headers: {
-                    pinata_api_key: "f75ca3f475cde44d3716",
-                    pinata_secret_api_key: "b4e510c005f231de7b91b7e4c335acf0695613e1a06bcfe5989e444a9cede57d",
-                }
-            });
-            return response.data;  // Contains name, description, and image
-        } catch (error) {
-            console.error("Error fetching metadata from IPFS:", error);
-            return null;
-        }
-    };
-
-
-    // Function to load NFTs owned by the account
-    const loadNFTs = async () => {
-        if (!account || !provider || !contractAddress) return;
-
-        setLoading(true);
-        try {
-            const signer = provider.getSigner();
-            const nftContract = new ethers.Contract(contractAddress, ContractAbi.abi, signer);
-
-            // Get the balance of NFTs owned by the account
-            const balance = await nftContract.balanceOf(account);
-            const nftData = [];
-
-            // Loop through each token ID and get its tokenURI
-            for (let i = 0; i < balance; i++) {
-                const tokenId = await nftContract.tokenOfOwnerByIndex(account, i);
-                const tokenURI = await nftContract.tokenURI(tokenId);
-
-                // Fetch the metadata from the tokenURI (assumes it's hosted on IPFS)
-                const metadata = await getMetadataFromIPFS(tokenURI.split('/').pop()); // Extract IPFS hash from URI
-
-                if (metadata) {
-                    nftData.push({
-                        tokenId: tokenId.toString(),
-                        name: metadata.name || "Unnamed NFT",  // Default if no name
-                        description: metadata.description || "No description",  // Default if no description
-                        image: metadata.image || "https://via.placeholder.com/150",  // Placeholder image if no image
-                    });
-                } else {
-                    console.log(`Metadata for tokenID ${tokenId} not found or invalid.`);
-                }
-            }
-
-            setNFTs(nftData);
-        } catch (error) {
-            console.error("Error fetching NFTs:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Fetch the NFTs on page load and whenever the account, provider, or contractAddress changes
-    useEffect(() => {
-        loadNFTs();
-    }, []);
-    
-
-    // Function to fetch 90 collections from OpenSea
+    // Function to fetch collection details
     const fetchOpenSeaCollections = async () => {
         setLoadingCollections(true);
         try {
+            console.log('Fetching collections from OpenSea...');
             const response = await axios.get('https://api.opensea.io/api/v2/collections', {
                 headers: {
                     'accept': 'application/json',
-                    'x-api-key': 'b796154723e34b28b881eb99f040a70e', // Use your OpenSea API key here
+                    'x-api-key': 'b796154723e34b28b881eb99f040a70e',
                 },
                 params: {
-                    limit: 99,  // Fetch 90 collections
-                    include_hidden: false,
-                    order_by: 'created_date'
+                    limit: 9, // Limit the collections fetched
                 }
             });
+            console.log('Collections response:', response.data);
 
-            let fetchedCollections = response.data.collections;
-
-            // Filter collections: only those with image_url and no "follower" in the name
-            const filteredCollections = fetchedCollections.filter(
-                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && !collection.name.includes("0x") && !collection.name.includes("REWARD") && !collection.name.toLowerCase().includes("won") && !collection.name.includes("won") && !collection.name.toLowerCase().includes("profile")
+            const fetchedCollections = response.data.collections.filter(
+                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && collection.owner.includes("0x")
             );
+            console.log('Filtered collections:', fetchedCollections);
 
-            // Avoid duplicates: Create a Set to track unique names
-            const uniqueNames = new Set();
-            const uniqueCollections = filteredCollections.filter(collection => {
-                if (!uniqueNames.has(collection.name)) {
-                    uniqueNames.add(collection.name);
-                    return true;
-                }
-                return false;
-            });
-
-            // Select the first 10 collections after filtering
-            const finalCollections = uniqueCollections.slice(0, 9);
-
-            // Update the state with the valid collections
-            setCollections(finalCollections);
-
+            // Fetch additional NFT details for each collection after fetching collections
+            const updatedCollections = await fetchNFTDetails(fetchedCollections);
+            setCollections(updatedCollections);
+            console.log('Updated collections with NFT details:', updatedCollections);
         } catch (error) {
             console.error("Error fetching OpenSea collections:", error);
         } finally {
@@ -123,15 +39,54 @@ function NFTGallery({ account, provider, contractAddress }) {
         }
     };
 
+    // Function to fetch NFT details for each collection
+    const fetchNFTDetails = async (collections) => {
+        console.log('Fetching NFT details for each collection...');
+        const updatedCollections = await Promise.all(
+            collections.map(async (collection) => {
+                const address = collection.owner;
+                const chain = collection.contracts[0]?.chain;
+                console.log(`Fetching NFT details for collection ${collection.name} (Address: ${address}, Chain: ${chain})`);
+
+                try {
+                    const nftResponse = await axios.get(`https://api.opensea.io/api/v2/chain/${chain}/account/${address}/nfts`, {
+                        headers: {
+                            'accept': 'application/json',
+                            'x-api-key': 'b796154723e34b28b881eb99f040a70e',
+                        },
+                    });
+
+                    console.log(`NFT response for collection ${collection.name}:`, nftResponse.data);
+
+                    const nftDetails = nftResponse.data.nfts[0]; // Use the first NFT for simplicity
+
+                    // Return the updated collection with NFT details
+                    return {
+                        ...collection,
+                        nftDetails, // Add the NFT details directly to the collection object
+                    };
+                } catch (error) {
+                    console.error(`Error fetching NFT details for collection ${collection.name}:`, error);
+                    return collection;  // Return collection even if there was an error
+                }
+            })
+        );
+        console.log('Finished fetching NFT details for all collections:', updatedCollections);
+        return updatedCollections;
+    };
+
     // Fetch collections on initial load
     useEffect(() => {
         fetchOpenSeaCollections();  // Fetch collections once when the page loads
-    }, []);  // Only run this effect once on mount
+    }, []);
 
+    // Shift between collections automatically
     useEffect(() => {
         const interval = setInterval(() => {
-          setCurrentNFT((prev) => (prev + 1) % collections.length);
-        }, 5000); // Automatically shift every 3 seconds
+            if (collections.length > 0) {
+                setCurrentNFT((prev) => (prev + 1) % collections.length);
+            }
+        }, 5000); // Automatically shift every 5 seconds
     
         return () => clearInterval(interval);
     }, [collections.length]);
@@ -139,8 +94,8 @@ function NFTGallery({ account, provider, contractAddress }) {
     return (
         <div className="nft-gallery">
             <div className="nft-info">
-                <img src={collections[currentNFT]?.image_url} alt={collections[currentNFT]?.name} />
-                <h3>{collections[currentNFT]?.name}</h3>
+                <img src={collections[currentNFT]?.image_url} alt={collections[currentNFT]?.name || 'NFT'} />
+                <h3>{collections[currentNFT]?.name || 'NFT'}</h3>
             </div>
 
             <div className="myNFT-collection">
@@ -161,6 +116,19 @@ function NFTGallery({ account, provider, contractAddress }) {
                                     <a href={collection.opensea_url} target="_blank" rel="noopener noreferrer">
                                         View on OpenSea
                                     </a>
+                                    <div>
+                                        <p>More NFT Details:</p>
+                                        {!collection.nftDetails ? (
+                                            <p>Loading Data...</p>
+                                        ) : (
+                                        <div>
+                                            
+                                            <p key={index}>Token Standard: {collection.nftDetails.token_standard.toUpperCase()}</p>
+                                            
+                                        </div>
+
+                                        )}
+                                    </div>
                                 </div>
                             ))
                         ) : (

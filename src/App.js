@@ -165,7 +165,8 @@ function App() {
       </div>
       
       <div className='header'>
-        <h1 className="animated-title">Mint Your NFT (Test Network)</h1>
+        {/* <h1 className="animated-title">Sonoa</h1> */}
+        <h2 className="animated-title">Mint Your NFT (Test Network)</h2>
         <div className='nav-bar'>
             <ul className='nav-links'>
                 <li className='nav-item home active'>Home</li>
