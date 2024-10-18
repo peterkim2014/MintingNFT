@@ -127,7 +127,7 @@ body {
   left: 10px;
   height: 500px;
   width: 275px;
-  Z-index: -1000;
+  Z-index: 1000;
   overflow-wrap: break-word;
 } .minimize-btn {
   position: absolute;

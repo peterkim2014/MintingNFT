@@ -143,32 +143,6 @@ function NFTGallery({ account, provider, contractAddress }) {
                 <h3>{collections[currentNFT]?.name}</h3>
             </div>
 
-
-            {/* <div className="myNFT-gallery"> */}
-
-                {/* <h2>Your Minted NFTs</h2>
-                {loading ? (
-                    <p>Loading your NFTs...</p>
-                ) : (
-                    <div className="nft-grid">
-                        {nfts.length > 0 ? (
-                            nfts.map((nft, index) => (
-                                <div className="nft-card" key={index}>
-                                    <img src={nft.image} alt={nft.name} />
-                                    <h3>{nft.name}</h3>
-                                    <p>{nft.description}</p>
-                                    <p>Token ID: {nft.tokenId}</p>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No NFTs found in your wallet.</p>
-                        )}
-                    </div>
-                )} */}
-
-            {/* </div> */}
-
-
             <div className="myNFT-collection">
                 <h2>Explore NFT Collections</h2>
                 {loadingCollections ? (
