@@ -1,64 +1,128 @@
 .nft-minter-console {
   display: flex;
   flex-direction: column;
-  background-color: #1e1e1e;
-  color: #00ff00;
-  font-family: 'Courier New', Courier, monospace;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background-color: #141414;
+  color: #f1f1f1;
+  font-family: 'Poppins', sans-serif;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  margin-top: 4rem;
+}
+
+.nft-minter-console::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #ff0077, #ff44a1);
+  border-radius: 50%;
+  z-index: -1;
+  animation: pulse 5s infinite ease-in-out;
+}
+
+.nft-minter-console::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #00c6ff, #0072ff);
+  border-radius: 50%;
+  z-index: -1;
+  animation: pulse 6s infinite ease-in-out alternate;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.7; }
 }
 
 .console-window {
-  background-color: #000000;
-  padding: 10px;
-  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
   max-height: 400px;
   overflow-y: auto;
-  margin-bottom: 20px;
-  border: 2px solid #00ff00;
+  margin-bottom: 30px;
+  border: 2px solid #ff0077;
 }
 
 .console-output {
   white-space: pre-wrap;
+  font-size: 1.1em;
 }
 
 .console-log {
   margin: 0;
-  padding: 0;
-  color: #00ff00;
+  padding: 10px 0;
+  color: #00ff99;
 }
 
 .console-inputs {
   display: flex;
   flex-direction: column;
+  padding-bottom: 2rem;
 }
 
 .console-input, .console-file-input {
-  background-color: #000000;
-  border: 2px solid #00ff00;
-  color: #00ff00;
-  padding: 10px;
-  margin-bottom: 10px;
-  font-family: 'Courier New', Courier, monospace;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid #00ff99;
+  color: #ffffff;
+  padding: 15px;
+  margin-bottom: 15px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1em;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.console-input:focus, .console-file-input:focus {
+  border-color: #ff0077;
+  outline: none;
 }
 
 .console-button {
-  background-color: #000000;
-  border: 2px solid #00ff00;
-  color: #00ff00;
-  padding: 10px;
+  background-color: #ff0077;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  border-radius: 10px;
   cursor: pointer;
-  font-family: 'Courier New', Courier, monospace;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  width: 100%;  /* Ensures uniform width */
+  max-width: 300px;  /* Limit max width for consistency */
+  height: 50px;  /* Set fixed height for all buttons */
+  display: flex;  /* Flexbox for centering text */
+  justify-content: center;  /* Center text horizontally */
+  align-items: center;  /* Center text vertically */
+  box-sizing: border-box;  /* Include padding in height calculation */
 }
 
+
 .console-button:hover {
-  background-color: #00ff00;
-  color: #000000;
+  background-color: #ff44a1;
+  transform: translateY(-5px);
+}
+
+.console-button:active {
+  background-color: #c6005b;
+  transform: translateY(2px);
 }
 
 a {
-  color: #00ff00;
+  color: #00ff99;
   text-decoration: none;
 }
 
@@ -67,34 +131,44 @@ a:hover {
 }
 
 .editor-wrapper {
-  margin-top: 20px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .editor-controls {
-  margin-top: 10px;
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 15px;
   align-items: center;
 }
 
 .editor-controls label {
-  color: #00ff00;
+  color: #ffffff;
+  font-size: 1.1em;
 }
 
 .editor-controls input {
-  margin: 0 5px;
+  margin: 0 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid #ff0077;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-.console-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #00ff00;
-  color: #000;
-  border: none;
-  cursor: pointer;
+.editor-controls input[type="range"] {
+  -webkit-appearance: none;
+  width: 100px;
+  height: 10px;
+  background: #003c84;
   border-radius: 5px;
+  outline: none;
+}
+
+@keyframes buttonBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
