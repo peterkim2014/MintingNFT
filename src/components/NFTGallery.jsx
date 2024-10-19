@@ -24,16 +24,16 @@ function NFTGallery({ account, provider, contractAddress }) {
                     limit: 50, // Limit the collections fetched
                 }
             });
-            console.log('Collections response:', response.data);
+            // console.log('Collections response:', response.data);
 
             const fetchedCollections = response.data.collections.filter(
                 collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && collection.owner.includes("0x") && !collection.name.includes("0x") && !collection.name.includes("REWARD") && !collection.name.toLowerCase().includes("won") && !collection.name.toLowerCase().includes("events") && !collection.name.toLowerCase().includes("posts")
             );
-            console.log('Filtered collections:', fetchedCollections);
+            // console.log('Filtered collections:', fetchedCollections);
 
             const updatedCollections = await fetchNFTDetails(fetchedCollections);
             setCollections(updatedCollections);
-            console.log('Updated collections with NFT details:', updatedCollections);
+            // console.log('Updated collections with NFT details:', updatedCollections);
         } catch (error) {
             console.error("Error fetching OpenSea collections:", error);
         } finally {
@@ -48,7 +48,7 @@ function NFTGallery({ account, provider, contractAddress }) {
             collections.map(async (collection) => {
                 const address = collection.owner;
                 const chain = collection.contracts[0]?.chain;
-                console.log(`Fetching NFT details for collection ${collection.name} (Address: ${address}, Chain: ${chain})`);
+                // console.log(`Fetching NFT details for collection ${collection.name} (Address: ${address}, Chain: ${chain})`);
 
                 try {
                     // Fetch NFT details

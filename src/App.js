@@ -7,6 +7,7 @@ import NFTMinter from './components/NFTMinter';
 import NFTGallery from './components/NFTGallery';
 import AccountDetails from './components/AccountDetails';
 import Contract from './compiledData/contract2.json';
+import MyCollections from './components/MyCollections';
 import './App.css';
 
 
@@ -67,12 +68,13 @@ function App() {
   
         const ETHERSCAN_API_KEY = 'D54MR6FMGII7MHBY22VHI9GKQAIGI9EHB5';
         const fromBlock = latestBlock - 15; // Fetch logs from the last 15 blocks
-        console.log("Fetching logs from block: ", fromBlock, " to ", latestBlock);
+        // console.log("Fetching logs from block: ", fromBlock, " to ", latestBlock);
   
         // Call the getLogs API to fetch event logs for the contract or account
         const response = await axios.get(
           `${networkUrls[network]}?module=logs&action=getLogs&address=${account}&fromBlock=${fromBlock}&toBlock=${latestBlock}&apikey=${ETHERSCAN_API_KEY}&offset=100`
         );
+        // console.log("Event Logs: ", response.data.result)
   
         const newLogs = response.data.result || [];
         setLogs((prevLogs) => [...prevLogs, ...newLogs]); // Append new logs to the existing ones
@@ -250,29 +252,21 @@ function App() {
                   <option value="Sepolia">Sepolia</option>
                 </select>
             </div>
-          {isLoadingLogs ? (
-            <p>Loading logs...</p>
-          ) : (
             <div className="logs-content">
               <p>Current Block: {latestBlock}</p>
-              {logs.length > 0 ? (
-                <>
+                <div>
                   {logs.map((log, index) => (
                     <div key={index} className="logs-list">
                       <p>
-                        <strong>Event:</strong> {log.topics[0]}
+                        <strong>Event:</strong> {log.topics[index]}
                       </p>
                       <p>
                         <strong>Data:</strong> {log.data}
                       </p>
                     </div>
                   ))}
-                </>
-              ) : (
-                <p>No logs found</p>
-              )}
+                </div>
             </div>
-          )}
         </div>
 
         <div className="header">
@@ -289,7 +283,9 @@ function App() {
               <li className="nav-item">
                 <Link to="/account">Account</Link>
               </li>
-              <li className="nav-item">My Collections</li>
+              <li className="nav-item">
+                <Link to="/mycollections">My Collections</Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -325,6 +321,15 @@ function App() {
               </>
             } 
           />
+
+          <Route 
+            path="/mycollections" 
+            element={
+              <>
+                <MyCollections account={account} contract={contract} provider={provider} latestBlock={latestBlock}/>
+              </>
+            } 
+          /> 
         </Routes>
 
         {account && (

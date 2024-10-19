@@ -14,6 +14,12 @@ contract MyNFT2 is ERC721URIStorage, Ownable {
     mapping(address => uint256[]) private _ownedTokens;
     mapping(uint256 => uint256) private _ownedTokensIndex;
 
+    // Mapping to track token IDs minted by each address
+    mapping(address => uint256[]) private _mintedTokens;
+
+    // Mapping to track tokens previously owned by an address
+    mapping(address => uint256[]) private _previouslyOwnedTokens;
+
     constructor() ERC721("MyNFT2", "MNFT") {}
 
     // Mint function that accepts a tokenURI
@@ -26,8 +32,9 @@ contract MyNFT2 is ERC721URIStorage, Ownable {
         _safeMint(to, newItemId);
         _setTokenURI(newItemId, tokenURI);
 
-        // Update ownership tracking
+        // Update ownership and minted token tracking
         _addTokenToOwnerEnumeration(to, newItemId);
+        _addTokenToMintedEnumeration(to, newItemId);
 
         emit NFTMinted(to, newItemId, tokenURI); // Emit event here
 
@@ -40,15 +47,30 @@ contract MyNFT2 is ERC721URIStorage, Ownable {
         _ownedTokensIndex[tokenId] = _ownedTokens[to].length - 1;
     }
 
+    // Function to manually add the token to the minted tokens tracking
+    function _addTokenToMintedEnumeration(address to, uint256 tokenId) internal {
+        _mintedTokens[to].push(tokenId);
+    }
+
+    // Function to get a list of token IDs minted by an address
+    function tokensMintedBy(address owner) public view returns (uint256[] memory) {
+        return _mintedTokens[owner];
+    }
+
     // Function to get a token ID owned by an address at a specific index (manual tokenOfOwnerByIndex)
     function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256) {
         require(index < _ownedTokens[owner].length, "Owner index out of bounds");
         return _ownedTokens[owner][index];
     }
 
-    // Function to get the number of tokens owned by an address
-    function tokensOwnedBy(address owner) public view returns (uint256) {
-        return _ownedTokens[owner].length;
+    // Function to get a list of tokens currently owned by an address
+    function tokensOwnedBy(address owner) public view returns (uint256[] memory) {
+        return _ownedTokens[owner];
+    }
+
+    // Function to get a list of tokens previously owned by an address
+    function tokensPreviouslyOwnedBy(address owner) public view returns (uint256[] memory) {
+        return _previouslyOwnedTokens[owner];
     }
 
     // Override _beforeTokenTransfer to remove from the previous owner and add to the new owner
@@ -60,11 +82,17 @@ contract MyNFT2 is ERC721URIStorage, Ownable {
 
         if (from != address(0) && from != to) {
             _removeTokenFromOwnerEnumeration(from, tokenId);
+            _addTokenToPreviouslyOwnedEnumeration(from, tokenId);  // Track as previously owned
         }
 
         if (to != address(0) && to != from) {
             _addTokenToOwnerEnumeration(to, tokenId);
         }
+    }
+
+    // Internal function to add a token to the previously owned list
+    function _addTokenToPreviouslyOwnedEnumeration(address from, uint256 tokenId) internal {
+        _previouslyOwnedTokens[from].push(tokenId);
     }
 
     // Internal function to remove a token from the previous owner's enumeration
