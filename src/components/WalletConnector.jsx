@@ -1,6 +1,7 @@
 // WalletConnector.js
 import React from 'react';
 import { ethers } from 'ethers';
+import '../static/WalletConnector.css';
 
 function WalletConnector({ setAccount, setProvider, triggerAnimation }) {
   // Function to connect to MetaMask
@@ -61,7 +62,7 @@ function WalletConnector({ setAccount, setProvider, triggerAnimation }) {
   };
 
   return (
-    <button onClick={connectWallet}>
+    <button onClick={connectWallet} className='connect-button'>
       Connect Wallet
     </button>
   );

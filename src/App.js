@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { ethers } from 'ethers';
+import axios from 'axios';
 import WalletConnector from './components/WalletConnector';
 import NFTMinter from './components/NFTMinter';
 import NFTGallery from './components/NFTGallery';
 import AccountDetails from './components/AccountDetails';
 import Contract from './compiledData/contract2.json';
 import './App.css';
+
+
 
 function App() {
   const [account, setAccount] = useState(null); // State to store the connected account
@@ -20,6 +23,67 @@ function App() {
   const [isContractLoaded, setIsContractLoaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false); // For drag state
   const dragStartRef = useRef({ top: 0, left: 0 }); // Track the drag start positions
+  const [logs, setLogs] = useState([]); // State to track logs from contract/account
+  const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+  const [latestBlock, setLatestBlock] = useState(null);
+  const logsContainerRef = useRef(null);
+
+
+
+  const fetchLatestBlock = async () => {
+    try {
+      const latestBlock = await provider.getBlockNumber();
+      setLatestBlock(latestBlock);
+    } catch (error) {
+      console.error("Error fetching latest block:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!account) return;
+  
+    // const fetchLatestBlock = async () => {
+    //   try {
+    //     const latestBlock = await provider.getBlockNumber();
+    //     setLatestBlock(latestBlock);
+    //   } catch (error) {
+    //     console.error("Error fetching latest block:", error);
+    //   }
+    // };
+  
+    const fetchEventLogs = async () => {
+      setIsLoadingLogs(true);
+      try {
+        if (!latestBlock) return;
+  
+        const ETHERSCAN_API_KEY = 'D54MR6FMGII7MHBY22VHI9GKQAIGI9EHB5';
+        const fromBlock = latestBlock - 15; // Fetch logs from the last 15 blocks
+        console.log("Fetching logs from block: ", fromBlock, " to ", latestBlock);
+  
+        // Call the getLogs API to fetch event logs for the contract or account
+        const response = await axios.get(
+          `https://api.etherscan.io/api?module=logs&action=getLogs&address=${account}&fromBlock=${fromBlock}&toBlock=${latestBlock}&apikey=${ETHERSCAN_API_KEY}&offset=25`
+        );
+  
+        const newLogs = response.data.result || [];
+        setLogs((prevLogs) => [...prevLogs, ...newLogs]); // Append new logs to the existing ones
+      } catch (error) {
+        console.error("Error fetching event logs:", error);
+      } finally {
+        setIsLoadingLogs(false);
+      }
+    };
+  
+    // Fetch logs every 2 seconds
+    // const intervalBlock = setInterval(fetchLatestBlock, 2000);
+    const intervalEvent = setInterval(fetchEventLogs, 2000);
+  
+    // Cleanup intervals on unmount
+    return () => {
+      // clearInterval(intervalBlock);
+      clearInterval(intervalEvent);
+    };
+  }, []);
 
   useEffect(() => {
     if (provider && isContractLoaded === true) {
@@ -71,6 +135,7 @@ function App() {
     };
   
     // Fetch the balance on the initial load
+    fetchLatestBlock();
     loadBalance();
   
     // Set up an interval to fetch the balance every 10 seconds (10000 ms)
@@ -78,11 +143,12 @@ function App() {
   
     // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, [account, provider]); 
+  }, [account]); 
 
   // Add scroll effect for account-info
   useEffect(() => {
     const handleScroll = () => {
+      fetchLatestBlock();
       const scrollY = window.scrollY; // Get vertical scroll position
       setTopPosition(85 + scrollY); // Adjust top position dynamically
     };
@@ -164,6 +230,31 @@ function App() {
           <div className="bg-circle"></div>
           <div className="bg-circle"></div>
           <div className="bg-circle"></div>
+        </div>
+        <div className="logs-container" ref={logsContainerRef}>
+          {isLoadingLogs ? (
+            <p>Loading logs...</p>
+          ) : (
+            <div className="logs-content">
+              <p>Current Block: {latestBlock}</p>
+              {logs.length > 0 ? (
+                <>
+                  {logs.map((log, index) => (
+                    <div key={index} className="logs-list">
+                      <p>
+                        <strong>Event:</strong> {log.topics[0]}
+                      </p>
+                      <p>
+                        <strong>Data:</strong> {log.data}
+                      </p>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <p>No logs found</p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="header">

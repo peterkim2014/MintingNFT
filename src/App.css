@@ -12,6 +12,7 @@ body {
 .header {
   text-align: center;
   padding: 20px;
+  margin-top: 2rem;
 }
 
 .nav-bar {
@@ -243,4 +244,30 @@ button:active {
     opacity: 1;
     transform: scale(1) translateZ(0);
   }
+}
+
+.logs-container {
+  position: sticky; 
+  top: 0px;
+  left: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  height: 3rem;
+  background-color: rgba(0, 0, 0, 0.463);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1003;
+} 
+.logs-container:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+} 
+
+.logs-content {
+  display: flex;
+  width: 95%;
+  justify-content: space-around;
+  align-items: center;
 }
