@@ -249,13 +249,20 @@ function App() {
         </div>
         
         <div className="logs-container" ref={logsContainerRef}>
-          <div className="network-selector">
-                <label htmlFor="network">Select Network: </label>
-                <select id="network" value={network} onChange={handleNetworkChange}>
+            <div className="network-selector">
+              <label htmlFor="network">Select Network: </label>
+              <div className="custom-select-container">
+                <select
+                  id="network"
+                  className="custom-select"
+                  value={network}
+                  onChange={handleNetworkChange}
+                >
                   <option value="Mainnet">Mainnet</option>
-                  {/* <option value="Goerli">Goerli</option> */}
                   <option value="Sepolia">Sepolia</option>
                 </select>
+                <div className="custom-select-arrow"></div>
+              </div>
             </div>
             <div className="logs-content">
               <p>Current Block: {latestBlock}</p>
