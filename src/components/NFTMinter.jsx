@@ -6,7 +6,7 @@ import ContractAbi from '../compiledData/contract-abi2.json';
 import { handleImageUpload } from './handleNFTUpload';
 import '../static/NFTMinterConsole.css'; // Create a custom CSS file for styling the console
 
-function NFTMinter({ account, provider, contractAddress }) {
+function NFTMinter({ account, provider, contractAddress, setTxHashList }) {
     const [minting, setMinting] = useState(false);
     const [txHash, setTxHash] = useState(null);
     const [name, setName] = useState("");
@@ -98,6 +98,7 @@ function NFTMinter({ account, provider, contractAddress }) {
             const tx = await nftContract.mint(account, metadataURI);
 
             logToConsole(`Transaction sent: ${tx.hash}`);
+            setTxHashList(tx.hash, 'transaction');
             setTxHash(tx.hash);
 
             await tx.wait();

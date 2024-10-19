@@ -26,7 +26,7 @@ function AccountDetails({ account, provider, balance, network, latestBlock }) {
         try {
           // Fetch Transaction History and Count
           const txResponse = await axios.get(
-            `${networkUrls[network]}?module=account&action=txlist&address=${account}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=${ETHERSCAN_API_KEY}`
+            `${networkUrls[network]}?module=account&action=txlist&address=${account}&startblock=0&endblock=99999999&page=1&offset=999&sort=desc&apikey=${ETHERSCAN_API_KEY}`
           );
           setTransactionHistory(txResponse.data.result.slice(0, 20)); // Limiting to 20 transactions for now
           setTransactionCount(txResponse.data.result.length);
@@ -45,7 +45,7 @@ function AccountDetails({ account, provider, balance, network, latestBlock }) {
     };
 
     fetchAccountDetails();
-  }, [account, latestBlock, network]);
+  }, [latestBlock]);
 
   // Helper function to determine method based on transaction data
   const getMethod = (tx) => {
@@ -58,7 +58,7 @@ function AccountDetails({ account, provider, balance, network, latestBlock }) {
       } else if (tx.input.startsWith('0x40c10f19')) {
         return 'Mint'; // Standard mint function signature for ERC-20/721
       } else {
-        return 'Contract Interaction'; // Fallback for other contract interactions
+        return 'Mint'; // Fallback for other contract interactions
       }
     } else {
       return 'Transfer'; // If no input data, it's a regular transfer
@@ -229,11 +229,25 @@ function AccountDetails({ account, provider, balance, network, latestBlock }) {
   );
 }
 
-// Helper function to format timestamps as "X days ago"
 function formatTimeAgo(timestamp) {
   const secondsAgo = Math.floor(Date.now() / 1000 - timestamp);
+
   const daysAgo = Math.floor(secondsAgo / (3600 * 24));
-  return `${daysAgo} days ago`;
+  if (daysAgo > 0) {
+    return `${daysAgo} days ago`;
+  }
+
+  const hoursAgo = Math.floor(secondsAgo / 3600);
+  if (hoursAgo > 0) {
+    return `${hoursAgo} hours ago`;
+  }
+
+  const minutesAgo = Math.floor(secondsAgo / 60);
+  if (minutesAgo > 0) {
+    return `${minutesAgo} minutes ago`;
+  }
+
+  return `${secondsAgo} seconds ago`;
 }
 
 export default AccountDetails;

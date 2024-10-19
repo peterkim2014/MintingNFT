@@ -198,7 +198,12 @@ function NFTGallery({ account, provider, contractAddress }) {
                                                     </a>
                                                 </div>
                                             ) : timeOutState[index] ? (
-                                                <p>No data available</p>
+                                                <div>
+                                                    {/* <p>No data available</p> */}
+                                                    <a href={collection.opensea_url} target="_blank" rel="noopener noreferrer">
+                                                            View on OpenSea
+                                                    </a>
+                                                </div>
                                             ) : (
                                                 <p>Loading Data...</p>
                                             )}

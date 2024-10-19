@@ -3,7 +3,7 @@ import React from 'react';
 import { ethers } from 'ethers';
 import '../static/WalletConnector.css';
 
-function WalletConnector({ setAccount, setProvider, triggerAnimation }) {
+function WalletConnector({ setAccount, setProvider, triggerAnimation, setTxHashList }) {
   // Function to connect to MetaMask
   const connectWallet = async () => {
     console.log('Attempting to connect to MetaMask...');

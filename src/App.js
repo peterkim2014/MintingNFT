@@ -10,7 +10,7 @@ import Contract from './compiledData/contract2.json';
 import MyCollections from './components/MyCollections';
 import './App.css';
 
-
+const ETHERSCAN_API_KEY = 'D54MR6FMGII7MHBY22VHI9GKQAIGI9EHB5';
 
 function App() {
   const [account, setAccount] = useState(null); // State to store the connected account
@@ -29,6 +29,7 @@ function App() {
   const [latestBlock, setLatestBlock] = useState(null);
   const logsContainerRef = useRef(null);
   const [network, setNetwork] = useState('Sepolia');
+  const [txHashList, setTxHashList] = useState([]); // List of transaction hashes
 
   // Define network URLs
   const networkUrls = {
@@ -36,11 +37,15 @@ function App() {
     // Goerli: 'https://api-goerli.etherscan.io/api',
     Sepolia: 'https://api-sepolia.etherscan.io/api'
   };
+  // Function to add txHash to txHashList
+  const addTxHash = (txHash, type) => {
+    setTxHashList((prevList) => [...prevList, { type, hash: txHash }]);
+  };
 
   useEffect(() => {
     if (account) {
       // Function to fetch the latest block periodically
-      const intervalBlock = setInterval(fetchLatestBlock, 2000); // Poll every 2 seconds
+      const intervalBlock = setInterval(fetchLatestBlock, 1000); // Poll every 2 seconds
   
       // Clean up the interval on component unmount
       return () => clearInterval(intervalBlock);
@@ -59,42 +64,41 @@ function App() {
 
 
   useEffect(() => {
-    if (!account) return;
-  
-    const fetchEventLogs = async () => {
-      setIsLoadingLogs(true);
+    const fetchContractStatus = async (txHash) => {
       try {
-        if (!latestBlock) return;
-  
-        const ETHERSCAN_API_KEY = 'D54MR6FMGII7MHBY22VHI9GKQAIGI9EHB5';
-        const fromBlock = latestBlock - 15; // Fetch logs from the last 15 blocks
-        // console.log("Fetching logs from block: ", fromBlock, " to ", latestBlock);
-  
-        // Call the getLogs API to fetch event logs for the contract or account
         const response = await axios.get(
-          `${networkUrls[network]}?module=logs&action=getLogs&address=${account}&fromBlock=${fromBlock}&toBlock=${latestBlock}&apikey=${ETHERSCAN_API_KEY}&offset=100`
+          `https://api.etherscan.io/api?module=transaction&action=getstatus&txhash=${txHash}&apikey=${ETHERSCAN_API_KEY}`
         );
-        // console.log("Event Logs: ", response.data.result)
-  
-        const newLogs = response.data.result || [];
-        setLogs((prevLogs) => [...prevLogs, ...newLogs]); // Append new logs to the existing ones
+        const status = response.data.result;
+        setLogs((prevLogs) => [...prevLogs, { type: 'Contract', status, txHash }]);
       } catch (error) {
-        console.error("Error fetching event logs:", error);
-      } finally {
-        setIsLoadingLogs(false);
+        console.error('Error fetching contract status:', error);
       }
     };
-  
-    // Fetch logs every 2 seconds
-    // const intervalBlock = setInterval(fetchLatestBlock, 2000);
-    const intervalEvent = setInterval(fetchEventLogs, 2000);
-  
-    // Cleanup intervals on unmount
-    return () => {
-      // clearInterval(intervalBlock);
-      clearInterval(intervalEvent);
+
+    const fetchTransactionStatus = async (txHash) => {
+      try {
+        const response = await axios.get(
+          `https://api.etherscan.io/api?module=transaction&action=gettxreceiptstatus&txhash=${txHash}&apikey=${ETHERSCAN_API_KEY}`
+        );
+        const status = response.data.result;
+        setLogs((prevLogs) => [...prevLogs, { type: 'Transaction', status, txHash }]);
+      } catch (error) {
+        console.error('Error fetching transaction status:', error);
+      }
     };
-  }, [latestBlock, account, network]);
+
+    if (txHashList.length > 0) {
+      txHashList.forEach(({ type, hash }) => {
+        if (type === 'contract') {
+          fetchContractStatus(hash);
+        } else if (type === 'transaction') {
+          fetchTransactionStatus(hash);
+        }
+      });
+    }
+  }, [txHashList]);
+  
 
   useEffect(() => {
     if (provider && isContractLoaded === true) {
@@ -118,13 +122,14 @@ function App() {
 
           // Deploy the contract with estimated gas
           const nftContract = await nftFactory.deploy();
-
+          addTxHash(nftContract.deployTransaction.hash, 'contract')
           await nftContract.deployed();
 
-          console.log("NFT Contract deployed at address:", nftContract.address);
+          console.log("NFT Contract deployed at address:", nftContract);
           localStorage.setItem('contractAddress', nftContract.address);
           setContract(nftContract);
           setContractAddress(nftContract.address);
+          
         } catch (error) {
           console.error("Error deploying/loading NFT Contract:", error);
         }
@@ -254,18 +259,20 @@ function App() {
             </div>
             <div className="logs-content">
               <p>Current Block: {latestBlock}</p>
-                <div>
-                  {logs.map((log, index) => (
-                    <div key={index} className="logs-list">
-                      <p>
-                        <strong>Event:</strong> {log.topics[index]}
-                      </p>
-                      <p>
-                        <strong>Data:</strong> {log.data}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+              {/* {logs.length > 0 ? (
+                logs.map((log, index) => (
+                  <div key={index} className="logs-list">
+                    <p>
+                      <strong>Event:</strong> {log.topics && log.topics.length > 0 ? log.topics[0] : "No Event"}
+                    </p>
+                    <p>
+                      <strong>Data:</strong> {log.data || "No Data Available"}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p>No logs available</p>
+              )} */}
             </div>
         </div>
 
@@ -289,7 +296,7 @@ function App() {
             </ul>
           </div>
         </div>
-        <WalletConnector setAccount={setAccount} setProvider={setProvider} />
+        <WalletConnector setAccount={setAccount} setProvider={setProvider} setTxHashList={addTxHash}/>
 
         <Routes>
           <Route
@@ -306,7 +313,7 @@ function App() {
             path="/mint"
             element={
               account && provider ? (
-                <NFTMinter account={account} provider={provider} contract={contract} />
+                <NFTMinter account={account} provider={provider} contract={contract} setTxHashList={addTxHash}/>
               ) : (
                 <p>Please connect your wallet to access the Mint page.</p>
               )

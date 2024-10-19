@@ -270,4 +270,7 @@ button:active {
   width: 95%;
   justify-content: space-around;
   align-items: center;
+} .logs-list {
+  display: flex;
+  width: 25%;
 }
