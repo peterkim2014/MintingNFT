@@ -27,7 +27,7 @@ function NFTGallery({ account, provider, contractAddress }) {
             console.log('Collections response:', response.data);
 
             const fetchedCollections = response.data.collections.filter(
-                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && collection.owner.includes("0x") && !collection.name.includes("0x") && !collection.name.includes("REWARD")
+                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && collection.owner.includes("0x") && !collection.name.includes("0x") && !collection.name.includes("REWARD") && !collection.name.toLowerCase().includes("won") && !collection.name.toLowerCase().includes("events") && !collection.name.toLowerCase().includes("posts")
             );
             console.log('Filtered collections:', fetchedCollections);
 
