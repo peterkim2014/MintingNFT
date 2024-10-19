@@ -71,7 +71,7 @@ function App() {
   
         // Call the getLogs API to fetch event logs for the contract or account
         const response = await axios.get(
-          `${networkUrls[network]}?module=logs&action=getLogs&address=${account}&fromBlock=${fromBlock}&toBlock=${latestBlock}&apikey=${ETHERSCAN_API_KEY}&offset=25`
+          `${networkUrls[network]}?module=logs&action=getLogs&address=${account}&fromBlock=${fromBlock}&toBlock=${latestBlock}&apikey=${ETHERSCAN_API_KEY}&offset=100`
         );
   
         const newLogs = response.data.result || [];
@@ -92,7 +92,7 @@ function App() {
       // clearInterval(intervalBlock);
       clearInterval(intervalEvent);
     };
-  }, []);
+  }, [latestBlock, account, network]);
 
   useEffect(() => {
     if (provider && isContractLoaded === true) {
