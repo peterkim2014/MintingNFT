@@ -6,12 +6,19 @@ import { ethers } from 'ethers';
 
 const ETHERSCAN_API_KEY = 'D54MR6FMGII7MHBY22VHI9GKQAIGI9EHB5'; // Replace with your actual Etherscan API key
 
-function AccountDetails({ account, provider, balance }) {
+function AccountDetails({ account, provider, balance, network, latestBlock }) {
   const [transactionCount, setTransactionCount] = useState(null);
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [nftTransfers, setNFTTransfers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [copyStatus, setCopyStatus] = useState({}); // State to track copy status for each item
+
+  // Define network URLs
+  const networkUrls = {
+    Mainnet: 'https://api.etherscan.io/api',
+    // Goerli: 'https://api-goerli.etherscan.io/api',
+    Sepolia: 'https://api-sepolia.etherscan.io/api'
+  };
 
   useEffect(() => {
     const fetchAccountDetails = async () => {
@@ -19,14 +26,14 @@ function AccountDetails({ account, provider, balance }) {
         try {
           // Fetch Transaction History and Count
           const txResponse = await axios.get(
-            `https://api.etherscan.io/api?module=account&action=txlist&address=${account}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=${ETHERSCAN_API_KEY}`
+            `${networkUrls[network]}?module=account&action=txlist&address=${account}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=${ETHERSCAN_API_KEY}`
           );
           setTransactionHistory(txResponse.data.result.slice(0, 20)); // Limiting to 20 transactions for now
           setTransactionCount(txResponse.data.result.length);
 
           // Fetch NFT Transfers (ERC-721)
           const nftResponse = await axios.get(
-            `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${account}&page=1&offset=10&sort=desc&apikey=${ETHERSCAN_API_KEY}`
+            `${networkUrls[network]}?module=account&action=tokennfttx&address=${account}&page=1&offset=10&sort=desc&apikey=${ETHERSCAN_API_KEY}`
           );
           setNFTTransfers(nftResponse.data.result);
 
@@ -38,7 +45,7 @@ function AccountDetails({ account, provider, balance }) {
     };
 
     fetchAccountDetails();
-  }, [account]);
+  }, [account, latestBlock, network]);
 
   // Helper function to determine method based on transaction data
   const getMethod = (tx) => {

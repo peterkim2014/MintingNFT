@@ -27,9 +27,26 @@ function App() {
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
   const [latestBlock, setLatestBlock] = useState(null);
   const logsContainerRef = useRef(null);
+  const [network, setNetwork] = useState('Sepolia');
 
+  // Define network URLs
+  const networkUrls = {
+    Mainnet: 'https://api.etherscan.io/api',
+    // Goerli: 'https://api-goerli.etherscan.io/api',
+    Sepolia: 'https://api-sepolia.etherscan.io/api'
+  };
 
-
+  useEffect(() => {
+    if (account) {
+      // Function to fetch the latest block periodically
+      const intervalBlock = setInterval(fetchLatestBlock, 2000); // Poll every 2 seconds
+  
+      // Clean up the interval on component unmount
+      return () => clearInterval(intervalBlock);
+    }
+  }, [account, network, latestBlock]);
+  
+  // Keep the fetchLatestBlock function as is
   const fetchLatestBlock = async () => {
     try {
       const latestBlock = await provider.getBlockNumber();
@@ -39,17 +56,9 @@ function App() {
     }
   };
 
+
   useEffect(() => {
     if (!account) return;
-  
-    // const fetchLatestBlock = async () => {
-    //   try {
-    //     const latestBlock = await provider.getBlockNumber();
-    //     setLatestBlock(latestBlock);
-    //   } catch (error) {
-    //     console.error("Error fetching latest block:", error);
-    //   }
-    // };
   
     const fetchEventLogs = async () => {
       setIsLoadingLogs(true);
@@ -62,7 +71,7 @@ function App() {
   
         // Call the getLogs API to fetch event logs for the contract or account
         const response = await axios.get(
-          `https://api.etherscan.io/api?module=logs&action=getLogs&address=${account}&fromBlock=${fromBlock}&toBlock=${latestBlock}&apikey=${ETHERSCAN_API_KEY}&offset=25`
+          `${networkUrls[network]}?module=logs&action=getLogs&address=${account}&fromBlock=${fromBlock}&toBlock=${latestBlock}&apikey=${ETHERSCAN_API_KEY}&offset=25`
         );
   
         const newLogs = response.data.result || [];
@@ -135,7 +144,6 @@ function App() {
     };
   
     // Fetch the balance on the initial load
-    fetchLatestBlock();
     loadBalance();
   
     // Set up an interval to fetch the balance every 10 seconds (10000 ms)
@@ -148,7 +156,6 @@ function App() {
   // Add scroll effect for account-info
   useEffect(() => {
     const handleScroll = () => {
-      fetchLatestBlock();
       const scrollY = window.scrollY; // Get vertical scroll position
       setTopPosition(85 + scrollY); // Adjust top position dynamically
     };
@@ -220,8 +227,10 @@ function App() {
     setIsContractLoaded(false); // Reset the contract loaded state to trigger loading
   };
 
-
-
+  // Dropdown component for network selection
+  const handleNetworkChange = (event) => {
+    setNetwork(event.target.value);
+  };
 
   return (
     <Router>
@@ -231,7 +240,16 @@ function App() {
           <div className="bg-circle"></div>
           <div className="bg-circle"></div>
         </div>
+        
         <div className="logs-container" ref={logsContainerRef}>
+          <div className="network-selector">
+                <label htmlFor="network">Select Network: </label>
+                <select id="network" value={network} onChange={handleNetworkChange}>
+                  <option value="Mainnet">Mainnet</option>
+                  {/* <option value="Goerli">Goerli</option> */}
+                  <option value="Sepolia">Sepolia</option>
+                </select>
+            </div>
           {isLoadingLogs ? (
             <p>Loading logs...</p>
           ) : (
@@ -303,7 +321,7 @@ function App() {
             path="/account" 
             element={
               <>
-                <AccountDetails balance={balance} account={account} provider={provider} />
+                <AccountDetails balance={balance} account={account} provider={provider} network={network} latestBlock={latestBlock}/>
               </>
             } 
           />
