@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import WalletConnector from './components/WalletConnector';
 import NFTMinter from './components/NFTMinter';
 import NFTGallery from './components/NFTGallery';
-// import Contract from './compiledData/contract.json';
+import AccountDetails from './components/AccountDetails';
 import Contract from './compiledData/contract2.json';
 import './App.css';
 
@@ -167,7 +167,8 @@ function App() {
         </div>
 
         <div className="header">
-          <h2 className="animated-title">Mint Your NFT (Test Network)</h2>
+          <h1 className="animated-title">OMEGA</h1>
+          {/* <h2 className="animated-title">Mint Your NFT (Test Network)</h2> */}
           <div className="nav-bar">
             <ul className="nav-links">
               <li className="nav-item">
@@ -176,7 +177,9 @@ function App() {
               <li className="nav-item">
                 <Link to="/mint">Mint</Link>
               </li>
-              <li className="nav-item">Account</li>
+              <li className="nav-item">
+                <Link to="/account">Account</Link>
+              </li>
               <li className="nav-item">My Collections</li>
             </ul>
           </div>
@@ -203,6 +206,15 @@ function App() {
                 <p>Please connect your wallet to access the Mint page.</p>
               )
             }
+          />
+
+          <Route 
+            path="/account" 
+            element={
+              <>
+                <AccountDetails balance={balance} account={account} provider={provider} />
+              </>
+            } 
           />
         </Routes>
 
