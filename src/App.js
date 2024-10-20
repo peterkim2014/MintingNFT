@@ -8,6 +8,7 @@ import NFTGallery from './components/NFTGallery';
 import AccountDetails from './components/AccountDetails';
 import Contract from './compiledData/contract2.json';
 import MyCollections from './components/MyCollections';
+import VenueEnvironment from './components/VenueEnvironment';
 import './App.css';
 
 const ETHERSCAN_API_KEY = 'D54MR6FMGII7MHBY22VHI9GKQAIGI9EHB5';
@@ -30,7 +31,16 @@ function App() {
   const logsContainerRef = useRef(null);
   const [network, setNetwork] = useState('Sepolia');
   const [txHashList, setTxHashList] = useState([]); // List of transaction hashes
+  const [view, setView] = useState('web'); // State for toggling between web and venue views
+  const [virtualParentNFTList, setVirtualParentNFTList] = useState([]); // State to store NFT collections for virtual environment
 
+  const handleToggleView = () => {
+    setView(view === 'web' ? 'venue' : 'web'); // Toggle between 'web' and 'venue'
+  };
+  // Callback function to update virtualParentNFTList from NFTGallery
+  const updateVirtualParentNFTList = (nftCollection) => {
+    setVirtualParentNFTList(nftCollection);
+  };
   // Define network URLs
   const networkUrls = {
     Mainnet: 'https://api.etherscan.io/api',
@@ -263,23 +273,14 @@ function App() {
                 </select>
                 <div className="custom-select-arrow"></div>
               </div>
+              <div className="toggle-container">
+                <button onClick={handleToggleView} className="toggle-button">
+                  Switch to {view === 'web' ? 'Venue Interface' : 'Web Interface'}
+                </button>
+              </div>
             </div>
             <div className="logs-content">
               <p>Current Block: {latestBlock}</p>
-              {/* {logs.length > 0 ? (
-                logs.map((log, index) => (
-                  <div key={index} className="logs-list">
-                    <p>
-                      <strong>Event:</strong> {log.topics && log.topics.length > 0 ? log.topics[0] : "No Event"}
-                    </p>
-                    <p>
-                      <strong>Data:</strong> {log.data || "No Data Available"}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p>No logs available</p>
-              )} */}
             </div>
         </div>
 
@@ -305,46 +306,40 @@ function App() {
         </div>
         <WalletConnector setAccount={setAccount} setProvider={setProvider} setTxHashList={addTxHash}/>
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                
-                <NFTGallery account={account} provider={provider} contractAddress={contractAddress} />
-              </>
-            }
-          />
+        {view === 'web' ? (
+          <div>
+            <Routes>
+              <Route
+                path="/"
+                element={<NFTGallery account={account} provider={provider} contractAddress={contractAddress} updateVirtualParentNFTList={updateVirtualParentNFTList}/>}
+              />
+              <Route
+                path="/mint"
+                element={
+                  account && provider ? (
+                    <NFTMinter account={account} provider={provider} contract={contract} />
+                  ) : (
+                    <p>Please connect your wallet to access the Mint page.</p>
+                  )
+                }
+              />
+              <Route
+                path="/account"
+                element={<AccountDetails balance={balance} account={account} provider={provider} />}
+              />
+              <Route
+                path="/mycollections"
+                element={<MyCollections account={account} contract={contract} provider={provider} />}
+              />
+            </Routes>
+          </div>
+        ) : (
+          <div className="venue-interface">
+            <h2>Welcome to the Venue Interface</h2>
+            <VenueEnvironment virtualParentNFTList={virtualParentNFTList}/>
+          </div>
+        )}
 
-          <Route
-            path="/mint"
-            element={
-              account && provider ? (
-                <NFTMinter account={account} provider={provider} contract={contract} setTxHashList={addTxHash}/>
-              ) : (
-                <p>Please connect your wallet to access the Mint page.</p>
-              )
-            }
-          />
-
-          <Route 
-            path="/account" 
-            element={
-              <>
-                <AccountDetails balance={balance} account={account} provider={provider} network={network} latestBlock={latestBlock}/>
-              </>
-            } 
-          />
-
-          <Route 
-            path="/mycollections" 
-            element={
-              <>
-                <MyCollections account={account} contract={contract} provider={provider} latestBlock={latestBlock}/>
-              </>
-            } 
-          /> 
-        </Routes>
 
         {account && (
           <div

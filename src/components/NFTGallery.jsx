@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaCopy, FaCheck } from 'react-icons/fa';
 import '../static/NFTGallery.css'; // Ensure you have this CSS for styling
 
-function NFTGallery({ account, provider, contractAddress }) {
+function NFTGallery({ account, provider, contractAddress, updateVirtualParentNFTList }) {
     const [collections, setCollections] = useState([]);  // OpenSea collections
     const [loadingCollections, setLoadingCollections] = useState(true);
     const [currentNFT, setCurrentNFT] = useState(0);
@@ -27,12 +27,13 @@ function NFTGallery({ account, provider, contractAddress }) {
             // console.log('Collections response:', response.data);
 
             const fetchedCollections = response.data.collections.filter(
-                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && collection.owner.includes("0x") && !collection.name.includes("0x") && !collection.name.includes("REWARD") && !collection.name.toLowerCase().includes("won") && !collection.name.toLowerCase().includes("events") && !collection.name.toLowerCase().includes("posts")
+                collection => collection.image_url && !collection.name.toLowerCase().includes("follower") && !collection.name.includes("Reward") && collection.owner.includes("0x") && !collection.name.includes("0x") && !collection.name.includes("REWARD") && !collection.name.toLowerCase().includes("won") && !collection.name.toLowerCase().includes("events") && !collection.name.toLowerCase().includes("posts") && !collection.name.toLowerCase().includes("member")
             );
             // console.log('Filtered collections:', fetchedCollections);
 
             const updatedCollections = await fetchNFTDetails(fetchedCollections);
             setCollections(updatedCollections);
+            updateVirtualParentNFTList(updatedCollections);
             // console.log('Updated collections with NFT details:', updatedCollections);
         } catch (error) {
             console.error("Error fetching OpenSea collections:", error);

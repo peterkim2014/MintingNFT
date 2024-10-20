@@ -6,12 +6,13 @@ body {
     color: #f9f9f9;
     overflow-x: hidden; /* Prevent scrollbars from appearing */
     height: auto;
+    width: 100%;
   }
 
 .nft-gallery {
     padding: 20px;
     height: auto;
-    width: 90%;
+    width: 97%;
     max-width: 1200px;
     perspective: 1000px; 
     /* position: relative; */
