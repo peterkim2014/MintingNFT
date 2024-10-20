@@ -325,7 +325,7 @@ function App() {
               />
               <Route
                 path="/account"
-                element={<AccountDetails balance={balance} account={account} provider={provider} />}
+                element={<AccountDetails balance={balance} account={account} provider={provider} network={network}/>}
               />
               <Route
                 path="/mycollections"

@@ -45,7 +45,7 @@ function AccountDetails({ account, provider, balance, network, latestBlock }) {
     };
 
     fetchAccountDetails();
-  }, [latestBlock,network]);
+  }, [account,latestBlock,network]);
 
   // Helper function to determine method based on transaction data
   const getMethod = (tx) => {
