@@ -284,30 +284,31 @@ function App() {
             </div>
         </div>
 
-        <div className="header">
-          <h1 className="animated-title">OMEGA</h1>
-          {/* <h2 className="animated-title">Mint Your NFT (Test Network)</h2> */}
-          <div className="nav-bar">
-            <ul className="nav-links">
-              <li className="nav-item">
-                <Link to="/">Home</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/mint">Mint</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/account">Account</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/mycollections">My Collections</Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <WalletConnector setAccount={setAccount} setProvider={setProvider} setTxHashList={addTxHash}/>
+        
 
         {view === 'web' ? (
           <div>
+            <div className="header">
+              <h1 className="animated-title">OMEGA</h1>
+              {/* <h2 className="animated-title">Mint Your NFT (Test Network)</h2> */}
+              <div className="nav-bar">
+                <ul className="nav-links">
+                  <li className="nav-item">
+                    <Link to="/">Home</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/mint">Mint</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/account">Account</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/mycollections">My Collections</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <WalletConnector setAccount={setAccount} setProvider={setProvider} setTxHashList={addTxHash}/>
             <Routes>
               <Route
                 path="/"

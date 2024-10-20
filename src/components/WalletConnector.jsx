@@ -62,9 +62,11 @@ function WalletConnector({ setAccount, setProvider, triggerAnimation, setTxHashL
   };
 
   return (
-    <button onClick={connectWallet} className='connect-button'>
-      Connect Wallet
-    </button>
+    <div style={{"width": "100%", "text-align":'center'}}>
+      <button onClick={connectWallet} className='connect-button' style={{"width": "150px", 'height': '50px', padding: '5px'}}>
+        Connect Wallet
+      </button>
+    </div>
   );
 }
 
