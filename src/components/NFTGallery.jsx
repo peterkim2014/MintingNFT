@@ -21,7 +21,7 @@ function NFTGallery({ account, provider, contractAddress, updateVirtualParentNFT
                     'x-api-key': 'b796154723e34b28b881eb99f040a70e',
                 },
                 params: {
-                    limit: 50, // Limit the collections fetched
+                    limit: 75, // Limit the collections fetched
                 }
             });
             // console.log('Collections response:', response.data);

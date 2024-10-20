@@ -10,7 +10,8 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
   const clock = new THREE.Clock();
   const [selectedNFT, setSelectedNFT] = useState(null);
   const [mouseControl, setMouseControl] = useState(true); // Toggle mouse control
-  const [toolbarPosition, setToolbarPosition] = useState({ top: 10, left: 10 });
+  const [toolbarPosition, setToolbarPosition] = useState({ top: 50, right: 50 });
+  const [isNFTMinimized, setIsNFTMinimized] = useState(false); // State to track minimization
   const toolbarRef = useRef(null);
 
   useEffect(() => {
@@ -60,8 +61,7 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
     // PointerLockControls for 360-degree movement
     const controls = new PointerLockControls(camera, document.body);
     controlsRef.current = controls;
-    const delta = clock.getDelta();
-    
+
     const handleKeyDown = (event) => {
       switch (event.code) {
         case 'KeyW': controls.moveForward(0.3); break;
@@ -70,7 +70,7 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
         case 'KeyD': controls.moveRight(0.3); break;
         case 'Escape': // Detect the Escape key
           controls.unlock(); // Exit 360° navigation
-          setMouseControl(true); // Switch back to pointer mode
+          setMouseControl(true); // Automatically switch to pointer mode
           break;
         default: break;
       }
@@ -84,13 +84,11 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
 
       controls.addEventListener('lock', () => {
         console.log("Pointer locked");
-        // Activate the keydown listener when the mouse is locked
         window.addEventListener('keydown', handleKeyDown);
       });
 
       controls.addEventListener('unlock', () => {
         console.log("Pointer unlocked");
-        // Remove the keydown listener when the mouse is unlocked
         window.removeEventListener('keydown', handleKeyDown);
       });
     } else {
@@ -114,6 +112,7 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
         const selectedIndex = nftFrames.indexOf(selectedObject);
         setSelectedNFT(virtualParentNFTList[selectedIndex]); // Set the selected NFT
         console.log("Selected NFT:", virtualParentNFTList[selectedIndex]);
+        setIsNFTMinimized(false); // Reset minimization when a new NFT is selected
       }
     };
 
@@ -148,6 +147,11 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
   // Toggle between mouse visibility for navigation and NFT clicking
   const toggleMouseControl = () => {
     setMouseControl((prev) => !prev);
+  };
+
+  // Toggle NFT minimization
+  const toggleNFTMinimize = () => {
+    setIsNFTMinimized((prev) => !prev);
   };
 
   // Handle toolbar drag
@@ -186,10 +190,53 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }} ref={mountRef}>
       {selectedNFT && (
-        <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#fff', padding: '10px' }}>
-          <h3>{selectedNFT.name}</h3>
-          <p>{selectedNFT.description}</p>
-          <img src={selectedNFT.image_url} alt={selectedNFT.name} style={{ width: '150px' }} />
+        <div
+          style={{
+            position: 'absolute',
+            top: isNFTMinimized ? '10px' : '50%',
+            left: isNFTMinimized ? '10px' : '50%',
+            transform: isNFTMinimized ? 'none' : 'translate(-50%, -50%)',
+            background: '#fff',
+            padding: '20px',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+            borderRadius: '8px',
+            zIndex: 1001,
+            transition: 'all 0.3s ease',
+            width: isNFTMinimized ? '150px' : '400px',
+            height: isNFTMinimized ? '50px' : 'auto',
+            cursor: isNFTMinimized ? 'pointer' : 'default'
+          }}
+          onClick={toggleNFTMinimize}
+        >
+          {isNFTMinimized ? (
+            <div style={{'padding': '10px','color': 'black', 'text-align': 'center', position: 'absolute', top: '50px', left: '10px'}}>
+              <h4 style={{'margin': '0'}}>{selectedNFT.name}</h4>
+              <p style={{'margin': '0'}}>Click to expand</p>
+            </div>
+          ) : (
+            <div>
+              <h3>{selectedNFT.name}</h3>
+              <p>{selectedNFT.description}</p>
+              <img src={selectedNFT.image_url} alt={selectedNFT.name} style={{ width: '100%' }} />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleNFTMinimize();
+                }}
+                style={{
+                  marginTop: '10px',
+                  padding: '5px 10px',
+                  background: '#007BFF',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                Minimize
+              </button>
+            </div>
+          )}
         </div>
       )}
       <div
@@ -205,7 +252,7 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
         }}
       >
         <button onClick={toggleMouseControl}>
-          {mouseControl ? 'Enable 360° Navigation' : 'Enable Mouse Clicking'}
+          {mouseControl ? 'Click on Screen to enable 360° Navigation' : 'Press Esc to disable 360° Navigation'}
         </button>
       </div>
     </div>

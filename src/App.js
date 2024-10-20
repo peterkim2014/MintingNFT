@@ -289,7 +289,7 @@ function App() {
         {view === 'web' ? (
           <div>
             <div className="header">
-              <h1 className="animated-title">OMEGA</h1>
+              <h1 className="animated-title">Mosaic Galleria</h1>
               {/* <h2 className="animated-title">Mint Your NFT (Test Network)</h2> */}
               <div className="nav-bar">
                 <ul className="nav-links">
