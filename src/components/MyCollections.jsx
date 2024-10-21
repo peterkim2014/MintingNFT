@@ -21,12 +21,12 @@ const MyCollections = ({ account, contract, provider, latestBlock }) => {
           // Step 2: Fetch the metadata JSON from IPFS (via Pinata)
           const metadataResponse = await fetch(tokenURI); // IPFS link stored in tokenURI
           const metadata = await metadataResponse.json();
-
+          console.log("metadata: ", metadata)
           // Step 3: Get the image URI from the metadata
           const imageURI = metadata.image;
 
           // Step 4: Fetch the actual image file from Pinata
-          const pinataImageURL = `https://gateway.pinata.cloud/ipfs/${imageURI.split('ipfs://')[1]}`;
+          const pinataImageURL = imageURI;
           const imageResponse = await fetch(pinataImageURL);
           const imageBlob = await imageResponse.blob();
 

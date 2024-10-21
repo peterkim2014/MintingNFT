@@ -16,51 +16,148 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
 
   useEffect(() => {
     // Initialize the scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xdddddd);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xdddddd);
 
-    // Set up camera
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 1.6, 5);
+// Set up camera
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 1.6, 5);
 
-    // Set up renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    const currentMount = mountRef.current;
-    currentMount.appendChild(renderer.domElement);
+// Set up renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+const currentMount = mountRef.current;
+currentMount.appendChild(renderer.domElement);
 
-    // Add lighting
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    scene.add(ambientLight);
+// Add lighting
+const ambientLight = new THREE.AmbientLight(0x404040);
+scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalLight.position.set(5, 10, 7.5).normalize();
-    scene.add(directionalLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(5, 10, 7.5).normalize();
+scene.add(directionalLight);
 
-    // Create walls for the virtual hall
-    const wallGeometry = new THREE.BoxGeometry(40, 10, 1); // Wall size
-    const wallMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+// Create textured walls for the virtual hall
+const wallTexture = new THREE.TextureLoader().load('https://example.com/path/to/wall-texture.jpg'); // Replace with a real URL
+wallTexture.wrapS = wallTexture.wrapT = THREE.RepeatWrapping; // Repeat the texture for large walls
+wallTexture.repeat.set(4, 2); // Set the repeat for the texture pattern
 
-    const wall1 = new THREE.Mesh(wallGeometry, wallMaterial);
-    wall1.position.set(0, 5, -20); // Position the back wall
-    scene.add(wall1);
+const wallMaterial = new THREE.MeshStandardMaterial({
+  map: wallTexture,
+  metalness: 0.3,
+  roughness: 0.7,
+  side: THREE.DoubleSide,
+});
 
-    const wall2 = wall1.clone();
-    wall2.rotation.y = Math.PI / 2; // Rotate for side wall
-    wall2.position.set(-20, 5, 0); // Position the left wall
-    scene.add(wall2);
+// Add windows or panel details by cutting out sections of the walls
+const windowGeometry = new THREE.PlaneGeometry(5, 2.5); // Window size
+const windowMaterial = new THREE.MeshBasicMaterial({ color: 0x5555ff, opacity: 0.8, transparent: true }); // Semi-transparent blue for windows
 
-    const wall3 = wall1.clone();
-    wall3.rotation.y = -Math.PI / 2; // Rotate for right wall
-    wall3.position.set(20, 5, 0); // Position the right wall
-    scene.add(wall3);
+// Back wall with windows
+const wall1 = new THREE.Mesh(new THREE.BoxGeometry(40, 10, 1), wallMaterial);
+wall1.position.set(0, 5, -20);
+scene.add(wall1);
 
-    // Create a floor
-    const floorGeometry = new THREE.PlaneGeometry(40, 40);
-    const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2; // Rotate to lie flat
-    scene.add(floor);
+const window1 = new THREE.Mesh(windowGeometry, windowMaterial);
+window1.position.set(-10, 7, -19.5); // Slightly in front of the wall
+scene.add(window1);
+
+const window2 = window1.clone();
+window2.position.set(10, 7, -19.5);
+scene.add(window2);
+
+// Left wall with panels
+const wall2 = wall1.clone();
+wall2.rotation.y = Math.PI / 2;
+wall2.position.set(-20, 5, 0);
+scene.add(wall2);
+
+const leftPanel1 = new THREE.Mesh(windowGeometry, windowMaterial);
+leftPanel1.position.set(-19.5, 7, -5); // Close to left wall
+leftPanel1.rotation.y = Math.PI / 2;
+scene.add(leftPanel1);
+
+const leftPanel2 = leftPanel1.clone();
+leftPanel2.position.set(-19.5, 7, 5);
+scene.add(leftPanel2);
+
+// Right wall with reflections
+const wall3 = wall1.clone();
+wall3.rotation.y = -Math.PI / 2;
+wall3.position.set(20, 5, 0);
+scene.add(wall3);
+
+const rightWallReflectiveMaterial = new THREE.MeshStandardMaterial({
+  color: 0x444444,
+  metalness: 1,
+  roughness: 0.05,
+  envMapIntensity: 1,
+});
+
+const rightWallPanel = new THREE.Mesh(new THREE.BoxGeometry(40, 10, 1), rightWallReflectiveMaterial);
+rightWallPanel.position.set(19.9, 5, 0);
+scene.add(rightWallPanel);
+
+  // Create a unique floor for the virtual hall
+  const floorGeometry = new THREE.PlaneGeometry(40, 40, 10, 10); // Adding segments for detailed textures
+  const floorMaterial = new THREE.MeshStandardMaterial({
+    color: 0x333333, // Dark base color
+    metalness: 0.6, // Slightly metallic for a shiny effect
+    roughness: 0.4, // Some smoothness for reflections
+  });
+
+  // Create a checkered pattern using a custom texture
+  const textureLoader = new THREE.TextureLoader();
+  const checkeredTexture = textureLoader.load('https://example.com/path/to/checkered-texture.jpg'); // Use a real URL here
+
+  // Apply the texture to the floor
+  checkeredTexture.wrapS = checkeredTexture.wrapT = THREE.RepeatWrapping; // Repeat the texture
+  checkeredTexture.repeat.set(8, 8); // Set the repeat pattern for checkered tiles
+
+  floorMaterial.map = checkeredTexture; // Apply texture to the material
+
+  const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+  floor.rotation.x = -Math.PI / 2; // Rotate to lie flat
+  scene.add(floor);
+
+  // Add subtle glow effect (optional)
+  const floorGlowGeometry = new THREE.PlaneGeometry(40, 40);
+  const floorGlowMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 1.0 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec2 vUv;
+      uniform float time;
+      void main() {
+        vec2 st = vUv;
+        st *= 10.0;
+        vec3 color = vec3(0.3, 0.5, 1.0); // Custom glow color
+        color *= sin(st.x + time) * sin(st.y + time);
+        gl_FragColor = vec4(color, 0.2); // Glow intensity
+      }
+    `,
+    transparent: true,
+  });
+  const floorGlow = new THREE.Mesh(floorGlowGeometry, floorGlowMaterial);
+  floorGlow.rotation.x = -Math.PI / 2;
+  floorGlow.position.y = 0.01; // Slightly above the main floor for effect
+  scene.add(floorGlow);
+
+  // Animate the glow effect over time
+  function animateGlow(time) {
+    floorGlowMaterial.uniforms.time.value = time * 0.001;
+    requestAnimationFrame(animateGlow);
+  }
+  animateGlow(0);
+
 
     // Store the frames in an array for raycasting
     const nftFrames = [];
