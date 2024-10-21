@@ -37,25 +37,62 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
     directionalLight.position.set(5, 10, 7.5).normalize();
     scene.add(directionalLight);
 
+    // Create walls for the virtual hall
+    const wallGeometry = new THREE.BoxGeometry(40, 10, 1); // Wall size
+    const wallMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+
+    const wall1 = new THREE.Mesh(wallGeometry, wallMaterial);
+    wall1.position.set(0, 5, -20); // Position the back wall
+    scene.add(wall1);
+
+    const wall2 = wall1.clone();
+    wall2.rotation.y = Math.PI / 2; // Rotate for side wall
+    wall2.position.set(-20, 5, 0); // Position the left wall
+    scene.add(wall2);
+
+    const wall3 = wall1.clone();
+    wall3.rotation.y = -Math.PI / 2; // Rotate for right wall
+    wall3.position.set(20, 5, 0); // Position the right wall
+    scene.add(wall3);
+
+    // Create a floor
+    const floorGeometry = new THREE.PlaneGeometry(40, 40);
+    const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2; // Rotate to lie flat
+    scene.add(floor);
+
     // Store the frames in an array for raycasting
     const nftFrames = [];
 
-    // Display NFT collections in the 3D space
+    // Display NFT collections on the walls
     virtualParentNFTList.forEach((collection, index) => {
       const textureLoader = new THREE.TextureLoader();
       const nftTexture = textureLoader.load(collection.image_url);
 
       // Create a 3D frame for each NFT
-      const frameGeometry = new THREE.BoxGeometry(3, 4, 0.1);
+      const frameGeometry = new THREE.PlaneGeometry(3, 4); // Make the NFT appear as a "picture"
       const frameMaterial = new THREE.MeshBasicMaterial({ map: nftTexture });
       const frame = new THREE.Mesh(frameGeometry, frameMaterial);
 
-      // Position the frames in a grid layout
-      frame.position.set((index % 5) * 5 - 10, 2, -10 - Math.floor(index / 5) * 5);
-      scene.add(frame);
+      // Position the NFTs on the walls
+      const wallIndex = Math.floor(index / 5); // Select which wall (0: back, 1: left, 2: right)
+      const xPos = (index % 5) * 5 - 10; // Adjust horizontal position
+      const yPos = 3; // Adjust vertical position
+      let zPos = -15; // Distance from the camera for the back wall
 
-      // Add the frame to the array for raycasting
-      nftFrames.push(frame);
+      if (wallIndex === 1) {
+        frame.position.set(-15, yPos, xPos); // Position on the left wall
+        frame.rotation.y = Math.PI / 2;
+      } else if (wallIndex === 2) {
+        frame.position.set(15, yPos, xPos); // Position on the right wall
+        frame.rotation.y = -Math.PI / 2;
+      } else {
+        frame.position.set(xPos, yPos, zPos); // Position on the back wall
+      }
+
+      scene.add(frame);
+      nftFrames.push(frame); // Store for raycasting
     });
 
     // PointerLockControls for 360-degree movement
