@@ -129,11 +129,13 @@ body {
   transform: translateZ(20px); 
   position: fixed;
   top: 85px;
-  left: 10px;
+  left: 30px;
   height: 500px;
   width: 275px;
   Z-index: 1000;
   overflow-wrap: break-word;
+  display: flex;
+  flex-direction: column;
 } .minimize-btn {
   position: absolute;
   bottom: 15px;
@@ -165,6 +167,40 @@ body {
   bottom: 0;
   right: 0;
 }
+/* Expanded drag bar */
+.drag-bar {
+  background-color: #333;
+  color: white;
+  padding: 2px;
+  cursor: grab;
+  user-select: none;
+  text-align: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.drag-bar:active {
+  cursor: grabbing;
+}
+
+/* Minimized drag bar */
+.minimized-drag-bar {
+  background-color: #333;
+  color: white;
+  padding: 2px;
+  cursor: grab;
+  user-select: none;
+  text-align: center;
+  border-radius: 12px 12px 0 0;
+  height: 50px;
+  width: 50px;
+  margin-bottom: 1rem;
+}
+
+.minimized-drag-bar:active {
+  cursor: grabbing;
+}
+
+
 
 
 button {

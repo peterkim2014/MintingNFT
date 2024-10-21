@@ -98,7 +98,7 @@ function NFTMinter({ account, provider, contractAddress, setTxHashList }) {
             const tx = await nftContract.mint(account, metadataURI);
 
             logToConsole(`Transaction sent: ${tx.hash}`);
-            setTxHashList(tx.hash, 'transaction');
+            // setTxHashList(tx.hash, 'transaction');
             setTxHash(tx.hash);
 
             await tx.wait();

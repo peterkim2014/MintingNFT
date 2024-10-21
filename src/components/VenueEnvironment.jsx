@@ -191,54 +191,89 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }} ref={mountRef}>
       {selectedNFT && (
         <div
-          style={{
+            style={{
             position: 'absolute',
-            top: isNFTMinimized ? '10px' : '50%',
+            top: isNFTMinimized ? '125px' : '50%',
             left: isNFTMinimized ? '10px' : '50%',
             transform: isNFTMinimized ? 'none' : 'translate(-50%, -50%)',
-            background: '#fff',
-            padding: '20px',
+            background: isNFTMinimized
+                ? 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)'
+                : '#fff', // Background changes based on minimized state
+            padding: isNFTMinimized ? '15px' : '20px',
             boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
             borderRadius: '8px',
             zIndex: 1001,
             transition: 'all 0.3s ease',
             width: isNFTMinimized ? '150px' : '400px',
             height: isNFTMinimized ? '50px' : 'auto',
-            cursor: isNFTMinimized ? 'pointer' : 'default'
-          }}
-          onClick={toggleNFTMinimize}
+            cursor: 'pointer',
+            color: isNFTMinimized ? '#fff' : '#000',
+            textAlign: isNFTMinimized ? 'center' : 'left',
+            fontFamily: 'Arial, sans-serif', // Modern, clean font
+            }}
+            onClick={toggleNFTMinimize}
         >
-          {isNFTMinimized ? (
-            <div style={{'padding': '10px','color': 'black', 'text-align': 'center', position: 'absolute', top: '50px', left: '10px'}}>
-              <h4 style={{'margin': '0'}}>{selectedNFT.name}</h4>
-              <p style={{'margin': '0'}}>Click to expand</p>
-            </div>
-          ) : (
+            {isNFTMinimized ? (
+            // Minimized View
             <div>
-              <h3>{selectedNFT.name}</h3>
-              <p>{selectedNFT.description}</p>
-              <img src={selectedNFT.image_url} alt={selectedNFT.name} style={{ width: '100%' }} />
-              <button
+                <h4
+                style={{
+                    margin: '0',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    textShadow: '1px 1px 3px rgba(0, 0, 0, 0.3)',
+                }}
+                >
+                {selectedNFT.name}
+                </h4>
+                <p
+                style={{
+                    margin: '5px 0 0 0',
+                    fontSize: '14px',
+                    color: '#f0f0f0',
+                }}
+                >
+                Click to expand
+                </p>
+            </div>
+            ) : (
+            // Expanded View
+            <div>
+                <h3
+                style={{
+                    fontSize: '24px',
+                    color: '#000',
+                }}
+                >
+                {selectedNFT.name}
+                </h3>
+                {/* <p style={{ color: '#333' }}>{selectedNFT.description}</p> */}
+                <img
+                src={selectedNFT.image_url}
+                alt={selectedNFT.name}
+                style={{ width: '100%', borderRadius: '8px' }}
+                />
+                <button
                 onClick={(e) => {
-                  e.stopPropagation();
-                  toggleNFTMinimize();
+                    e.stopPropagation(); // Prevent clicking from toggling the entire container
+                    toggleNFTMinimize();
                 }}
                 style={{
-                  marginTop: '10px',
-                  padding: '5px 10px',
-                  background: '#007BFF',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer'
+                    marginTop: '10px',
+                    padding: '8px 12px',
+                    background: '#007BFF',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
                 }}
-              >
+                >
                 Minimize
-              </button>
+                </button>
             </div>
-          )}
+            )}
         </div>
-      )}
+        )}
       <div
         ref={toolbarRef}
         style={{

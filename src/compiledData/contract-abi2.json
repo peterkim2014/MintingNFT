@@ -1,7 +1,4 @@
 {
-    "_format": "hh-sol-artifact-1",
-    "contractName": "MyNFT",
-    "sourceName": "contracts/Lock.sol",
     "abi": [
       {
         "inputs": [],

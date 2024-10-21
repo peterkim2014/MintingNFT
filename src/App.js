@@ -7,6 +7,7 @@ import NFTMinter from './components/NFTMinter';
 import NFTGallery from './components/NFTGallery';
 import AccountDetails from './components/AccountDetails';
 import Contract from './compiledData/contract2.json';
+import Abi from './compiledData/contract-abi2.json'
 import MyCollections from './components/MyCollections';
 import VenueEnvironment from './components/VenueEnvironment';
 import './App.css';
@@ -118,17 +119,18 @@ function App() {
 
           // Make sure you're using correct ABI and bytecode
           const nftFactory = new ethers.ContractFactory(
-            [
-              "function mint(address to, string memory tokenURI) public returns (uint256)",
-              "constructor() public"
-            ], // Use correct ABI from compiled contract JSON
-            Contract.Contract, // Use correct bytecode
+            Abi.abi, 
+            Contract.Contract, 
             signer
           );
-
-          // Estimate gas price and limit
-          // const gasPrice = await provider.getGasPrice();
-          // console.log("Gas Price:", ethers.utils.formatUnits(gasPrice, "gwei"), "gwei");
+          // const nftFactory = new ethers.ContractFactory(
+          //   [
+          //     "function mint(address to, string memory tokenURI) public returns (uint256)",
+          //     "constructor() public"
+          //   ], 
+          //   Contract.Contract, 
+          //   signer
+          // );
 
           // Deploy the contract with estimated gas
           const nftContract = await nftFactory.deploy();
@@ -230,8 +232,8 @@ function App() {
       setTopPosition(85); 
       setLeftPosition(10);
     }
-    setTopPosition(50); 
-    setLeftPosition(10);
+    setTopPosition(80); 
+    setLeftPosition(50);
     setIsMinimized(!isMinimized);
   };
 
@@ -336,7 +338,7 @@ function App() {
           </div>
         ) : (
           <div className="venue-interface">
-            <h2>Welcome to the Venue Interface</h2>
+            <h2>Mosaic Galleria</h2>
             <VenueEnvironment virtualParentNFTList={virtualParentNFTList}/>
           </div>
         )}
@@ -344,24 +346,37 @@ function App() {
 
         {account && (
           <div
-            className={`account-info ${isMinimized ? 'minimized' : ''}`}
-            style={{ top: `${topPosition}px`, left: `${leftPosition}px` }}
-            onMouseDown={handleMouseDown}
-          >
-            {!isMinimized && (
-              <>
-                <p>Your connected account: {account}</p>
-                <p>Account Balance: {balance} ETH</p>
-                <p>Contract Address: {contractAddress ? contractAddress : "Not deployed yet"}</p>
-                <button onClick={handleLoadContract} className="load-contract-btn">
-                  Load Contract
-                </button>
-              </>
-            )}
-            <button className="minimize-btn" onClick={toggleMinimize}>
-              {isMinimized ? 'Expand' : 'Minimize'}
-            </button>
-          </div>
+          className={`account-info ${isMinimized ? 'minimized' : ''}`}
+          style={{ top: `${topPosition}px`, left: `${leftPosition}px` }}
+          onMouseDown={isMinimized ? handleMouseDown : null}  
+        >
+          {!isMinimized && (
+            <>
+              
+              <div className="drag-bar" onMouseDown={handleMouseDown}>
+                <p>Drag Here</p> 
+              </div>
+        
+              
+              <p>Your connected account: {account}</p>
+              <p>Account Balance: {balance} ETH</p>
+              <p>Contract Address: {contractAddress ? contractAddress : "Not deployed yet"}</p>
+              <button onClick={handleLoadContract} className="load-contract-btn">
+                Load Contract
+              </button>
+            </>
+          )}
+        
+          {isMinimized && (
+            <div className="minimized-drag-bar" onMouseDown={handleMouseDown}>
+              <p>Drag</p>
+            </div>
+          )}
+
+          <button className="minimize-btn" onClick={toggleMinimize}>
+            {isMinimized ? 'Expand' : 'Minimize'}
+          </button>
+        </div>
         )}
       </div>
     </Router>
