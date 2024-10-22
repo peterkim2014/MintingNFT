@@ -58,7 +58,7 @@ function NFTMinter({ account, provider, contractAddress, setTxHashList }) {
 
         const response = await fetch(finalImage);
         const blob = await response.blob();
-        const nftImageFile = new File([blob], 'nft_image.png', { type: 'image/png' });
+        const nftImageFile = new File([blob], `${name}.png`, { type: 'image/png' });
 
         // Upload image to IPFS using handleImageUpload
         const imageResponse = await handleImageUpload(nftImageFile);
