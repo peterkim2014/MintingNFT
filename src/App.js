@@ -36,7 +36,7 @@ function App() {
   const [virtualParentNFTList, setVirtualParentNFTList] = useState([]); // State to store NFT collections for virtual environment
 
   const handleToggleView = () => {
-    setView(view === 'web' ? 'venue' : 'web'); // Toggle between 'web' and 'venue'
+    setView(view === 'web' ? 'virtual' : 'web'); // Toggle between 'web' and 'venue'
   };
   // Callback function to update virtualParentNFTList from NFTGallery
   const updateVirtualParentNFTList = (nftCollection) => {
@@ -123,14 +123,6 @@ function App() {
             Contract.Contract, 
             signer
           );
-          // const nftFactory = new ethers.ContractFactory(
-          //   [
-          //     "function mint(address to, string memory tokenURI) public returns (uint256)",
-          //     "constructor() public"
-          //   ], 
-          //   Contract.Contract, 
-          //   signer
-          // );
 
           // Deploy the contract with estimated gas
           const nftContract = await nftFactory.deploy();
@@ -277,7 +269,7 @@ function App() {
               </div>
               <div className="toggle-container">
                 <button onClick={handleToggleView} className="toggle-button">
-                  Switch to {view === 'web' ? 'Venue Interface' : 'Web Interface'}
+                  Switch to {view === 'web' ? 'Virtual Hall' : 'Web Interface'}
                 </button>
               </div>
             </div>

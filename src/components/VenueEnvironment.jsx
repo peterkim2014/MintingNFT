@@ -9,7 +9,6 @@ const VenueEnvironment = ({ virtualParentNFTList }) => {
   const controlsRef = useRef(null);
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  const clock = new THREE.Clock();
   const [selectedNFT, setSelectedNFT] = useState(null);
   const [mouseControl, setMouseControl] = useState(true); // Toggle mouse control
   const [toolbarPosition, setToolbarPosition] = useState({ top: 50, right: 50 });
