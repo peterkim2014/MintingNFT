@@ -11,6 +11,7 @@ import Abi from './compiledData/contract-abi2.json'
 import MyCollections from './components/MyCollections';
 import VenueEnvironment from './components/VenueEnvironment';
 import './App.css';
+import logo from './static/media/MosaicLogoTransparent.png'
 
 const ETHERSCAN_API_KEY = 'D54MR6FMGII7MHBY22VHI9GKQAIGI9EHB5';
 
@@ -283,7 +284,10 @@ function App() {
         {view === 'web' ? (
           <div>
             <div className="header">
-              <h1 className="animated-title">Mosaic Galleria</h1>
+              <div className='logo-container'>
+                <img src={logo} alt="Logo" className="logo" />
+                <h1 className="animated-title">Mosaic Galleria</h1>
+              </div>
               {/* <h2 className="animated-title">Mint Your NFT (Test Network)</h2> */}
               <div className="nav-bar">
                 <ul className="nav-links">
